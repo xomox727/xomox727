@@ -48,8 +48,7 @@ export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsH
               <img 
                 src={cat.image} 
                 alt={cat.title} 
-                loading="lazy"
-                className={`w-full h-full object-cover ${cat.position || 'object-center'} ${cat.customClass || ''} grayscale-0 sm:grayscale sm:group-hover:grayscale-0 transition-all duration-700 opacity-100 sm:opacity-60 sm:group-hover:opacity-100`}
+                className={`relative z-20 w-full h-full object-cover ${cat.position || 'object-center'} ${cat.customClass || ''} transition-all duration-700 opacity-100`}
               />
             </div>
 
