@@ -18,7 +18,8 @@ import another1Image from './another-1.png';
 import another2Image from './another-2.png';
 import another3Image from './another-3.png';
 import another4Image from './another-4.png';
-import another5Image from './another-5.png';
+// another-5.png is too large (14MB) and causes 404/loading issues on GitHub Pages
+// import another5Image from './another-5.png';
 import another6Image from './another-6.png';
 import another6Pic1 from './another6-pic1.png';
 import another6Pic2 from './another6-pic2.png';
@@ -34,7 +35,8 @@ import layout3Image from './layout-3.png';
 import layout1Pic1 from './layout1-pic1.png';
 import layout1Pic2 from './layout1-pic2.png';
 import layout1Pic3 from './layout1-pic3.png';
-import layout3Pic1 from './layout3-pic1.png';
+// layout3-pic1.png is too large (8MB)
+// import layout3Pic1 from './layout3-pic1.png';
 import layout3Pic2 from './layout3-pic2.png';
 import identity2Image from './identity-2.svg';
 import identity2Pic1 from './identity2-pic1.svg';
@@ -193,7 +195,7 @@ const layoutWorks: Work[] = [
     contain: true,
     imageClass: 'p-10',
     galleryImages: [
-      layout3Pic1,
+      layout3Pic2, // Using pic2 twice because pic1 is too heavy
       layout3Pic2
     ]
   }
