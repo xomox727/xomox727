@@ -1,27 +1,22 @@
 @import "tailwindcss";
 
-:root {
-  background-color: #2e406f !important; /* 你的品牌藍色 */
-}
-
-body {
+/* 強制讓網頁的最外層長高，不要縮在一起 */
+html, body, #root {
+  height: 100% !important;
+  min-height: 100vh !important;
   margin: 0;
   padding: 0;
+  background-color: #2e406f !important; /* 你的品牌藍色 */
+  overflow-x: hidden;
+}
+
+/* 確保 App 裡面所有的 Section 都能顯示 */
+#root > div {
   min-height: 100vh;
-  background-color: #2e406f !important;
+  width: 100%;
+}
+
+/* 暫時讓所有文字變白色，避免因為深色模式導致字看不見 */
+* {
   color: white !important;
-}
-
-#root {
-  width: 100vw;
-  height: 100vh;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  border: 10px solid red; /* 如果看到紅框，代表成功了 */
-}
-
-#root::after {
-  content: "設計師作品集加載中...如果看到這行字，代表路徑對了！";
-  font-size: 2rem;
 }
