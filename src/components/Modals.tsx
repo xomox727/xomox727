@@ -77,7 +77,6 @@ export const Modals = React.memo(({
                       alt="" 
                       loading="lazy"
                       className={`w-full h-full transition-transform duration-1000 group-hover:scale-105 ${work.contain ? 'object-contain p-8' : 'object-cover'} ${work.imageClass || ''}`}
-                      referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                     {work.title && (
@@ -150,7 +149,6 @@ export const Modals = React.memo(({
                         src={img} 
                         alt="" 
                         className={`w-full h-full transition-transform duration-1000 group-hover:scale-105 ${img.includes('another6') ? 'object-contain p-12 lg:p-16' : img.includes('identity4-pic1') || img.includes('layout3-pic2') || img.includes('identity5-pic1') ? 'object-contain p-8' : 'object-cover'}`} 
-                        referrerPolicy="no-referrer" 
                       />
                     </button>
                   ))}
@@ -175,7 +173,6 @@ export const Modals = React.memo(({
                   src={selectedWork.full} 
                   alt={selectedWork.title || "Full screen project image"} 
                   className="max-w-full max-h-full object-contain cursor-default"
-                  referrerPolicy="no-referrer"
                   onClick={(e) => e.stopPropagation()}
                 />
               </>
@@ -207,7 +204,6 @@ export const Modals = React.memo(({
               src={enlargedImage} 
               alt="Enlarged view" 
               className={`max-w-full max-h-full object-contain ${enlargedImage.includes('identity4-pic1') ? 'bg-neutral-100 rounded-lg p-8 shadow-2xl' : ''}`}
-              referrerPolicy="no-referrer"
             />
           </motion.div>
         )}
