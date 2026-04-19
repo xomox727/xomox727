@@ -22,14 +22,14 @@ export const HomeHero = React.memo(({ isDarkMode, heroMobileImage, heroSvg, hero
           <img 
             src={heroMobileImage} 
             alt="XOMOX Minimalist Portfolio typography, light mode mobile" 
-            loading="lazy"
             className="w-full h-full object-contain scale-[1.08] md:hidden"
+            referrerPolicy="no-referrer"
           />
           <img 
             src={heroSvg} 
             alt="XOMOX Minimalist Portfolio typography, light mode desktop" 
-            loading="lazy"
             className="hidden md:block w-full h-full object-contain"
+            referrerPolicy="no-referrer"
           />
         </div>
 
@@ -37,14 +37,14 @@ export const HomeHero = React.memo(({ isDarkMode, heroMobileImage, heroSvg, hero
           <img 
             src={heroMobileDarkImage} 
             alt="XOMOX Minimalist Portfolio typography, dark mode mobile" 
-            loading="lazy"
             className="w-full h-full object-contain scale-[1.08] md:hidden"
+            referrerPolicy="no-referrer"
           />
           <img 
             src={heroDarkSvg} 
             alt="XOMOX Minimalist Portfolio typography, dark mode desktop" 
-            loading="lazy"
             className="hidden md:block w-full h-full object-contain"
+            referrerPolicy="no-referrer"
           />
         </div>
       </motion.div>

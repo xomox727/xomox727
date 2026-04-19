@@ -3,57 +3,57 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion, useScroll, useSpring, useMotionValue } from 'motion/react';
+import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
-const heroSvg = '/xomox727/hero.svg';
-const heroDarkSvg = '/xomox727/hero-dark.svg';
-const heroMobileImage = '/xomox727/hero-mobile.png';
-const heroMobileDarkImage = '/xomox727/hero-mobile-dark.svg';
-const layoutImage = '/xomox727/layout.png';
-const identityImage = '/xomox727/identity.png';
-const packageImage = '/xomox727/package-design.png';
-const illustrationImage = '/xomox727/illustration.jpg';
-const another1Image = '/xomox727/another-1.png';
-const another2Image = '/xomox727/another-2.png';
-const another3Image = '/xomox727/another-3.png';
-const another4Image = '/xomox727/another-4.png';
-const another5Image = '/xomox727/another-5.png';
-const another6Image = '/xomox727/another-6.png';
-const another6Pic1 = '/xomox727/another6-pic1.png';
-const another6Pic2 = '/xomox727/another6-pic2.png';
-const another6Pic3 = '/xomox727/another6-pic3.png';
-const identity1Image = '/xomox727/identity-1.png';
-const identityGallery1 = '/xomox727/identity1-pic1.png';
-const identityGallery2 = '/xomox727/identity1-pic2.png';
-const layoutGallery1 = '/xomox727/layout2-pic1.png';
-const layoutGallery2 = '/xomox727/layout2-pic2.png';
-const layout1Image = '/xomox727/layout-1.png';
-const layout2Image = '/xomox727/layout-2.png';
-const layout3Image = '/xomox727/layout-3.png';
-const layout1Pic1 = '/xomox727/layout1-pic1.png';
-const layout1Pic2 = '/xomox727/layout1-pic2.png';
-const layout1Pic3 = '/xomox727/layout1-pic3.png';
-const layout3Pic1 = '/xomox727/layout3-pic1.png';
-const layout3Pic2 = '/xomox727/layout3-pic2.png';
-const identity2Image = '/xomox727/identity-2.svg';
-const identity2Pic1 = '/xomox727/identity2-pic1.svg';
-const identity2Pic2 = '/xomox727/identity2-pic2.png';
-const identity3Image = '/xomox727/identity-3.png';
-const identity3Pic1 = '/xomox727/identity3-pic1.png';
-const identity3Pic2 = '/xomox727/identity3-pic2.png';
-const identity3Pic3 = '/xomox727/identity3-pic3.png';
-const identity4Image = '/xomox727/identity-4.svg';
-const identity4Pic1 = '/xomox727/identity4-pic1.png';
-const identity4Pic2 = '/xomox727/identity4-pic2.png';
-const identity4Pic3 = '/xomox727/identity4-pic3.png';
-const identity5Image = '/xomox727/identity-5.svg';
-const identity5Pic1 = '/xomox727/identity5-pic1.png';
-const identity5Pic2 = '/xomox727/identity5-pic2.png';
-const package1Image = '/xomox727/package-1.png';
-const package2Image = '/xomox727/package-2.jpg';
-const illustration1Image = '/xomox727/illustration-1.jpg';
-const illustration2Image = '/xomox727/illustration-2.jpg';
+import heroSvg from './hero.svg';
+import heroDarkSvg from './hero-dark.svg';
+import heroMobileImage from './hero-mobile.png';
+import heroMobileDarkImage from './hero-mobile-dark.svg';
+import layoutImage from './layout.png';
+import identityImage from './identity.png';
+import packageImage from './package-design.png';
+import illustrationImage from './illustration.jpg';
+import another1Image from './another-1.png';
+import another2Image from './another-2.png';
+import another3Image from './another-3.png';
+import another4Image from './another-4.png';
+import another5Image from './another-5.png';
+import another6Image from './another-6.png';
+import another6Pic1 from './another6-pic1.png';
+import another6Pic2 from './another6-pic2.png';
+import another6Pic3 from './another6-pic3.png';
+import identity1Image from './identity-1.png';
+import identityGallery1 from './identity1-pic1.png';
+import identityGallery2 from './identity1-pic2.png';
+import layoutGallery1 from './layout2-pic1.png';
+import layoutGallery2 from './layout2-pic2.png';
+import layout1Image from './layout-1.png';
+import layout2Image from './layout-2.png';
+import layout3Image from './layout-3.png';
+import layout1Pic1 from './layout1-pic1.png';
+import layout1Pic2 from './layout1-pic2.png';
+import layout1Pic3 from './layout1-pic3.png';
+import layout3Pic1 from './layout3-pic1.png';
+import layout3Pic2 from './layout3-pic2.png';
+import identity2Image from './identity-2.svg';
+import identity2Pic1 from './identity2-pic1.svg';
+import identity2Pic2 from './identity2-pic2.png';
+import identity3Image from './identity-3.png';
+import identity3Pic1 from './identity3-pic1.png';
+import identity3Pic2 from './identity3-pic2.png';
+import identity3Pic3 from './identity3-pic3.png';
+import identity4Image from './identity-4.svg';
+import identity4Pic1 from './identity4-pic1.png';
+import identity4Pic2 from './identity4-pic2.png';
+import identity4Pic3 from './identity4-pic3.png';
+import identity5Image from './identity-5.svg';
+import identity5Pic1 from './identity5-pic1.png';
+import identity5Pic2 from './identity5-pic2.png';
+import package1Image from './package-1.png';
+import package2Image from './package-2.jpg';
+import illustration1Image from './illustration-1.jpg';
+import illustration2Image from './illustration-2.jpg';
 
 import { Navigation } from './components/Navigation';
 import { HomeHero } from './components/HomeHero';
@@ -247,6 +247,7 @@ export default function App() {
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const [isHovering, setIsHovering] = useState(false);
@@ -256,6 +257,18 @@ export default function App() {
   const mouseYSpring = useSpring(mouseY, { damping: 25, stiffness: 200, mass: 0.5 });
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500, mass: 0.1 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500, mass: 0.1 });
+
+  // Prevent body scrolling when a modal is open
+  useEffect(() => {
+    if (selectedCategory || selectedWork || enlargedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedCategory, selectedWork, enlargedImage]);
 
   useEffect(() => {
     let touchTimeout: NodeJS.Timeout;
@@ -335,6 +348,8 @@ export default function App() {
         return false;
       });
       if (current) setActiveSection(current);
+
+      setShowBackToTop(window.scrollY > 1000);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -368,9 +383,9 @@ export default function App() {
         aria-hidden="true"
       />
 
-      {/* Custom Cursor */}
+      {/* Custom Cursor - Hidden on mobile for better UX */}
       <motion.div
-        className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100] shadow-sm overflow-hidden will-change-transform"
+        className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100] shadow-sm overflow-hidden will-change-transform"
         style={{ 
           x: mouseXSpring, 
           y: mouseYSpring,
@@ -387,7 +402,7 @@ export default function App() {
         <div className="absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
       </motion.div>
       <motion.div
-        className="fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] overflow-hidden will-change-transform"
+        className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] overflow-hidden will-change-transform"
         style={{ 
           x: dotXSpring, 
           y: dotYSpring,
@@ -401,6 +416,25 @@ export default function App() {
         {/* Grainy Texture Overlay for small dot */}
         <div className="absolute inset-0 opacity-40 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
       </motion.div>
+
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            className="hidden md:flex fixed bottom-8 right-8 z-[90] w-12 h-12 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-full items-center justify-center text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors shadow-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 19V5M12 5L5 12M12 5L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       <Navigation 
         activeSection={activeSection} 
