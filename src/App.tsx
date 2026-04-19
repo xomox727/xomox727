@@ -402,6 +402,11 @@ export default function App() {
         <div className="absolute inset-0 opacity-40 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
       </motion.div>
 
+      {/* 診斷測試：首頁最上方直接放一張測試圖 */}
+      <div className="fixed top-20 left-0 z-[200] bg-red-500 p-2 text-white text-[10px] font-bold">
+        IMG TEST: <img src={another1Image} className="w-10 h-10 inline-block border-2 border-white" alt="test" />
+      </div>
+
       <Navigation 
         activeSection={activeSection} 
         isDarkMode={isDarkMode} 
