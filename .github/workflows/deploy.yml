@@ -1,33 +1,43 @@
 name: Deploy to GitHub Pages
 
 on:
+  # 當有檔案推送到 main 或是 master 分支時自動執行
   push:
-    branches: [ "main" ]
+    branches: ["main", "master"]
+  # 允許手動從 Actions 頁面觸發
   workflow_dispatch:
+
+# 設定權限以允許部署到 GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-      
+        
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
         
-      - name: Build Project
+      - name: Build project
         run: npm run build
         
       - name: Setup Pages
