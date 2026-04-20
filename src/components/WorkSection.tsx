@@ -13,9 +13,13 @@ export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsH
       
       {/* 🛡️ 終極防護樣式表 */}
       <style dangerouslySetInnerHTML={{ __html: `
-        /* 1. 消滅手機版按鈕自帶的點擊灰色遮罩 */
+        /* 1. 消滅手機版按鈕點擊遮罩，並強制鎖定圓角防破圖 (iOS Safari 剋星) */
         button {
           -webkit-tap-highlight-color: transparent;
+          -webkit-mask-image: -webkit-radial-gradient(white, black);
+          mask-image: radial-gradient(white, black);
+          transform: translateZ(0); /* 強制建立獨立渲染圖層 */
+          isolation: isolate;
         }
 
         /* 2. 專注於 flex 變化，打造純淨手風琴展開 */
@@ -60,7 +64,7 @@ export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsH
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
                 aria-label={`View ${cat.title} projects`}
-                // 原生按鈕，完全不抖
+                // 原生按鈕，完全不抖，圓角鎖死
                 className="w-full h-full overflow-hidden group text-left rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand relative block"
               >
               
