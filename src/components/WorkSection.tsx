@@ -11,10 +11,8 @@ export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsH
   return (
     <section id="work" className="min-h-screen flex flex-col items-center justify-center py-32 px-6">
       
-      {/* 僅保留最核心的過渡動畫，拒絕過度優化 */}
       <style dangerouslySetInnerHTML={{ __html: `
         .pure-flex-card {
-          /* 專注處理 flex 變化的平滑度 */
           transition: flex 0.7s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .pure-bg-layer {
@@ -37,7 +35,6 @@ export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsH
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              // 🧹 乾淨俐落的 Flex 設定
               className="pure-flex-card relative w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)] lg:w-auto lg:flex-1 lg:hover:flex-[2.5] h-[300px] sm:h-[400px] lg:h-[500px]"
             >
               <button
@@ -45,12 +42,11 @@ export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsH
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
                 aria-label={`View ${cat.title} projects`}
-                // 原生 button，不加任何 JS 動畫
                 className="w-full h-full overflow-hidden group text-left rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand relative block"
               >
               
-              {/* 背景圖片層 (乾淨的 CSS 縮放) */}
-              <div className={`absolute inset-0 ${cat.color} overflow-hidden bg-neutral-900`}>
+              {/* ✨ 修正點 1：拔除 bg-neutral-900，讓圖片乖乖透出你設定的 cat.color */}
+              <div className={`absolute inset-0 ${cat.color} overflow-hidden`}>
                 <div 
                   className={`pure-bg-layer w-full h-full bg-cover ${bgPosition} ${cat.customClass || ''} 
                     grayscale-0 sm:grayscale sm:group-hover:grayscale-0 
@@ -59,9 +55,11 @@ export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsH
                 />
               </div>
 
-              {/* 遮罩漸層 (讓文字清楚) */}
+              {/* 遮罩漸層 */}
               <div className="absolute inset-0 bg-black/30 opacity-0 lg:group-hover/list:opacity-100 lg:group-hover:!opacity-0 transition-opacity duration-500 pointer-events-none z-10" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
+              
+              {/* ✨ 修正點 2：把過深的底部漸層還原回你原本的 black/60 */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
 
               {/* 標題按鈕 */}
               <div className="absolute bottom-8 left-0 w-full text-center z-30 translate-y-0 sm:translate-y-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 transition-all duration-500 delay-75">
