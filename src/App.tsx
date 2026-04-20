@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (已完整對齊 GitHub Pages /xomox727/)
+// 🚀 圖片路徑配置
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -197,11 +197,10 @@ export default function App() {
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  
-  // 🎯 滑鼠互動狀態
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const [isHovering, setIsHovering] = useState(false);
+
   const mouseXSpring = useSpring(mouseX, { damping: 25, stiffness: 200, mass: 0.5 });
   const mouseYSpring = useSpring(mouseY, { damping: 25, stiffness: 200, mass: 0.5 });
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500, mass: 0.1 });
@@ -215,7 +214,6 @@ export default function App() {
     }
   }, [selectedCategory, selectedWork, enlargedImage]);
 
-  // 🖱️ 滑鼠位置監聽
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
@@ -225,7 +223,6 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
-  // 📜 捲動監聽 (修正導覽列發亮與回到頂部按鈕)
   useEffect(() => {
     const handleScroll = () => {
       const sections = ['home', 'work', 'about', 'contact'];
@@ -256,19 +253,23 @@ export default function App() {
   return (
     <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500 overflow-x-hidden">
       
-      {/* 🛠️ 全局樣式：解決圖片縮放抖動感 */}
+      {/* ✨ 終極防抖動優化 */}
       <style dangerouslySetInnerHTML={{ __html: `
         img { 
+          transform: translateZ(0);
           backface-visibility: hidden; 
-          transform-translate-z: 0; 
+          perspective: 1000px;
+          image-rendering: -webkit-optimize-contrast;
           will-change: transform;
+        }
+        .overflow-hidden {
+          mask-image: radial-gradient(white, black);
+          -webkit-mask-image: -webkit-radial-gradient(white, black);
         }
       `}} />
 
-      {/* 頂部閱讀進度條 */}
       <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]" style={{ scaleX }} />
       
-      {/* ✨ 滑鼠跟蹤球設計 */}
       <motion.div
         className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100] shadow-sm overflow-hidden"
         style={{ x: mouseXSpring, y: mouseYSpring, translateX: '-50%', translateY: '-50%' }}
