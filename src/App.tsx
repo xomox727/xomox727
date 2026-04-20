@@ -6,54 +6,58 @@
 import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
-const heroSvg = '/hero.svg';
-const heroDarkSvg = '/hero-dark.svg';
-const heroMobileImage = '/hero-mobile.png';
-const heroMobileDarkImage = '/hero-mobile-dark.svg';
-const layoutImage = '/layout.png';
-const identityImage = '/identity.png';
-const packageImage = '/package-design.png';
-const illustrationImage = '/illustration.jpg';
-const another1Image = '/another-1.png';
-const another2Image = '/another-2.png';
-const another3Image = '/another-3.png';
-const another4Image = '/another-4.png';
-const another5Image = '/another-5.png';
-const another6Image = '/another-6.png';
-const another6Pic1 = '/another6-pic1.png';
-const another6Pic2 = '/another6-pic2.png';
-const another6Pic3 = '/another6-pic3.png';
-const identity1Image = '/identity-1.png';
-const identityGallery1 = '/identity1-pic1.png';
-const identityGallery2 = '/identity1-pic2.png';
-const layoutGallery1 = '/layout2-pic1.png';
-const layoutGallery2 = '/layout2-pic2.png';
-const layout1Image = '/layout-1.png';
-const layout2Image = '/layout-2.png';
-const layout3Image = '/layout-3.png';
-const layout1Pic1 = '/layout1-pic1.png';
-const layout1Pic2 = '/layout1-pic2.png';
-const layout1Pic3 = '/layout1-pic3.png';
-const layout3Pic1 = '/layout3-pic1.png';
-const layout3Pic2 = '/layout3-pic2.png';
-const identity2Image = '/identity-2.svg';
-const identity2Pic1 = '/identity2-pic1.svg';
-const identity2Pic2 = '/identity2-pic2.png';
-const identity3Image = '/identity-3.png';
-const identity3Pic1 = '/identity3-pic1.png';
-const identity3Pic2 = '/identity3-pic2.png';
-const identity3Pic3 = '/identity3-pic3.png';
-const identity4Image = '/identity-4.svg';
-const identity4Pic1 = '/identity4-pic1.png';
-const identity4Pic2 = '/identity4-pic2.png';
-const identity4Pic3 = '/identity4-pic3.png';
-const identity5Image = '/identity-5.svg';
-const identity5Pic1 = '/identity5-pic1.png';
-const identity5Pic2 = '/identity5-pic2.png';
-const package1Image = '/package-1.png';
-const package2Image = '/package-2.jpg';
-const illustration1Image = '/illustration-1.jpg';
-const illustration2Image = '/illustration-2.jpg';
+
+// ==========================================
+// 🚨 這裡已經幫你把所有路徑補上 /xomox727/ 了
+// ==========================================
+const heroSvg = '/xomox727/hero.svg';
+const heroDarkSvg = '/xomox727/hero-dark.svg';
+const heroMobileImage = '/xomox727/hero-mobile.png';
+const heroMobileDarkImage = '/xomox727/hero-mobile-dark.svg';
+const layoutImage = '/xomox727/layout.png';
+const identityImage = '/xomox727/identity.png';
+const packageImage = '/xomox727/package-design.png';
+const illustrationImage = '/xomox727/illustration.jpg';
+const another1Image = '/xomox727/another-1.png';
+const another2Image = '/xomox727/another-2.png';
+const another3Image = '/xomox727/another-3.png';
+const another4Image = '/xomox727/another-4.png';
+const another5Image = '/xomox727/another-5.png';
+const another6Image = '/xomox727/another-6.png';
+const another6Pic1 = '/xomox727/another6-pic1.png';
+const another6Pic2 = '/xomox727/another6-pic2.png';
+const another6Pic3 = '/xomox727/another6-pic3.png';
+const identity1Image = '/xomox727/identity-1.png';
+const identityGallery1 = '/xomox727/identity1-pic1.png';
+const identityGallery2 = '/xomox727/identity1-pic2.png';
+const layoutGallery1 = '/xomox727/layout2-pic1.png';
+const layoutGallery2 = '/xomox727/layout2-pic2.png';
+const layout1Image = '/xomox727/layout-1.png';
+const layout2Image = '/xomox727/layout-2.png';
+const layout3Image = '/xomox727/layout-3.png';
+const layout1Pic1 = '/xomox727/layout1-pic1.png';
+const layout1Pic2 = '/xomox727/layout1-pic2.png';
+const layout1Pic3 = '/xomox727/layout1-pic3.png';
+const layout3Pic1 = '/xomox727/layout3-pic1.png';
+const layout3Pic2 = '/xomox727/layout3-pic2.png';
+const identity2Image = '/xomox727/identity-2.svg';
+const identity2Pic1 = '/xomox727/identity2-pic1.svg';
+const identity2Pic2 = '/xomox727/identity2-pic2.png';
+const identity3Image = '/xomox727/identity-3.png';
+const identity3Pic1 = '/xomox727/identity3-pic1.png';
+const identity3Pic2 = '/xomox727/identity3-pic2.png';
+const identity3Pic3 = '/xomox727/identity3-pic3.png';
+const identity4Image = '/xomox727/identity-4.svg';
+const identity4Pic1 = '/xomox727/identity4-pic1.png';
+const identity4Pic2 = '/xomox727/identity4-pic2.png';
+const identity4Pic3 = '/xomox727/identity4-pic3.png';
+const identity5Image = '/xomox727/identity-5.svg';
+const identity5Pic1 = '/xomox727/identity5-pic1.png';
+const identity5Pic2 = '/xomox727/identity5-pic2.png';
+const package1Image = '/xomox727/package-1.png';
+const package2Image = '/xomox727/package-2.jpg';
+const illustration1Image = '/xomox727/illustration-1.jpg';
+const illustration2Image = '/xomox727/illustration-2.jpg';
 
 import { Navigation } from './components/Navigation';
 import { HomeHero } from './components/HomeHero';
@@ -357,7 +361,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-950 selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-900 transition-colors duration-500">
+    <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-900 transition-colors duration-500 overflow-x-hidden">
       {/* Liquid Glass SVG Filter */}
       <svg width="0" height="0" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
         <defs>
@@ -379,7 +383,7 @@ export default function App() {
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-valuenow={NaN} /* Would need scroll tracking for accurate percentage, hiding from SR is generally fine for purely visual progress bars */
+        aria-valuenow={NaN}
         aria-hidden="true"
       />
 
@@ -443,24 +447,24 @@ export default function App() {
         setIsHovering={setIsHovering} 
       />
 
-<main id="main-content">
-      <HomeHero 
-        isDarkMode={isDarkMode} 
-        heroMobileImage={heroMobileImage} 
-        heroSvg={heroSvg} 
-        heroMobileDarkImage={heroMobileDarkImage} 
-        heroDarkSvg={heroDarkSvg} 
-      />
+      <main id="main-content" className="flex-1 w-full">
+        <HomeHero 
+          isDarkMode={isDarkMode} 
+          heroMobileImage={heroMobileImage} 
+          heroSvg={heroSvg} 
+          heroMobileDarkImage={heroMobileDarkImage} 
+          heroDarkSvg={heroDarkSvg} 
+        />
 
-      <WorkSection 
-        categories={categories} 
-        setSelectedCategory={setSelectedCategory} 
-        setIsHovering={setIsHovering} 
-      />
+        <WorkSection 
+          categories={categories} 
+          setSelectedCategory={setSelectedCategory} 
+          setIsHovering={setIsHovering} 
+        />
 
-      <AboutSection />
+        <AboutSection />
 
-      <ContactSection setIsHovering={setIsHovering} />
+        <ContactSection setIsHovering={setIsHovering} />
       </main>
 
       <Footer />
