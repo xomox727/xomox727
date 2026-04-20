@@ -1,17 +1,6 @@
 import { motion } from 'motion/react';
 import React from 'react';
 
-interface Work {
-  id: string;
-  thumb: string;
-  full: string;
-  title?: string;
-  type?: 'single' | 'gallery';
-  galleryImages?: string[];
-  contain?: boolean;
-  imageClass?: string;
-}
-
 interface WorkSectionProps {
   categories: any[];
   setSelectedCategory: (id: string) => void;
@@ -30,26 +19,29 @@ export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsH
         {categories.map((cat, index) => (
           <motion.li
             key={cat.id}
-            className="relative w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)] lg:w-auto lg:flex-1 lg:hover:flex-[2.5] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] h-[300px] sm:h-[400px] lg:h-[500px]"
+            // 優化點：將 transition-all 改為具體的 flex, width 監聽，減少重繪壓力
+            className="relative w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)] lg:w-auto lg:flex-1 lg:hover:flex-[2.5] transition-[flex,width] duration-700 ease-[cubic-bezier(0.25,1,0.3,1)] h-[300px] sm:h-[400px] lg:h-[500px]"
           >
             <motion.button
               onClick={() => setSelectedCategory(cat.id)}
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
-              whileHover={{ scale: 0.98 }}
+              // 🚨 移除 whileHover={{ scale: 0.98 }}，避免與內層縮放衝突
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
               aria-label={`View ${cat.title} projects`}
-              className="w-full h-full overflow-hidden group text-left rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand focus-visible:ring-offset-2 relative block"
+              // 加入 category-card 類名以啟動 App.tsx 中的硬體加速 CSS
+              className="w-full h-full overflow-hidden group text-left rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand focus-visible:ring-offset-2 relative block category-card"
             >
-            <div className={`absolute inset-0 ${cat.color} transition-transform duration-1000 group-hover:scale-105`}>
+            {/* 優化點：加入 will-change-transform 與 translate-z-0 強制開啟 GPU 渲染 */}
+            <div className={`absolute inset-0 ${cat.color} transition-transform duration-1000 ease-out group-hover:scale-105 will-change-transform transform-gpu`}>
               <img 
                 src={cat.image} 
                 alt={cat.title} 
                 loading="lazy"
-                className={`w-full h-full object-cover ${cat.position || 'object-center'} ${cat.customClass || ''} grayscale-0 sm:grayscale sm:group-hover:grayscale-0 transition-all duration-700 opacity-100 sm:opacity-60 sm:group-hover:opacity-100`}
+                className={`w-full h-full object-cover ${cat.position || 'object-center'} ${cat.customClass || ''} grayscale-0 sm:grayscale sm:group-hover:grayscale-0 transition-[filter,opacity] duration-700 opacity-100 sm:opacity-60 sm:group-hover:opacity-100`}
               />
             </div>
 
