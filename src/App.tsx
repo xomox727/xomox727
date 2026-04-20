@@ -44,7 +44,6 @@ const identity2Image = '/xomox727/identity-2.svg';
 const identity2Pic1 = '/xomox727/identity2-pic1.svg';
 const identity2Pic2 = '/xomox727/identity2-pic2.png';
 
-// ✅ 這裡已保持為 .svg
 const identity3Image = '/xomox727/identity-3.svg'; 
 const identity3Pic1 = '/xomox727/identity3-pic1.png';
 const identity3Pic2 = '/xomox727/identity3-pic2.png';
@@ -131,4 +130,166 @@ const identityWorks: Work[] = [
     thumb: identity3Image,
     full: identity3Image,
     title: '弘霖工程行',
-    type: 'gallery
+    type: 'gallery', // 這裡補上了引號
+    contain: true,
+    imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40', 
+    galleryImages: [
+      identity3Pic1,
+      identity3Pic2,
+      identity3Pic3
+    ]
+  },
+  {
+    id: 'identity-3',
+    thumb: identity4Image,
+    full: identity4Image,
+    title: 'MYJ服飾',
+    type: 'gallery',
+    contain: true,
+    galleryImages: [
+      identity4Pic1,
+      identity4Pic2,
+      identity4Pic3
+    ]
+  },
+  {
+    id: 'identity-4',
+    thumb: identity5Image,
+    full: identity5Image,
+    title: '台式馬卡龍',
+    type: 'gallery',
+    contain: true,
+    galleryImages: [
+      identity5Pic1,
+      identity5Pic2
+    ]
+  }
+];
+
+const layoutWorks: Work[] = [
+  {
+    id: 'layout-0',
+    thumb: layout1Image,
+    full: layout1Image,
+    title: '菜單',
+    type: 'gallery',
+    galleryImages: [
+      layout1Pic1,
+      layout1Pic2,
+      layout1Pic3
+    ]
+  },
+  {
+    id: 'layout-1',
+    thumb: layout2Image,
+    full: layout2Image,
+    title: '西螺老屋再造計畫手冊',
+    type: 'gallery',
+    galleryImages: [
+      layoutGallery1,
+      layoutGallery2
+    ]
+  },
+  {
+    id: 'layout-2',
+    thumb: layout3Image,
+    full: layout3Image,
+    title: '吉福堂',
+    type: 'gallery',
+    contain: true,
+    imageClass: 'p-10',
+    galleryImages: [
+      layout3Pic1,
+      layout3Pic2
+    ]
+  }
+];
+
+const packageWorks: Work[] = [
+  {
+    id: 'package-0',
+    thumb: package1Image,
+    full: package1Image,
+    title: 'MOOD咖啡包、外帶杯',
+    type: 'single'
+  },
+  {
+    id: 'package-1',
+    thumb: package2Image,
+    full: package2Image,
+    title: '甜點包裝',
+    type: 'single'
+  }
+];
+
+const illustrationWorks: Work[] = [
+  {
+    id: 'illustration-0',
+    thumb: illustration1Image,
+    full: illustration1Image,
+    title: '明信片設計',
+    type: 'single'
+  },
+  {
+    id: 'illustration-1',
+    thumb: illustration2Image,
+    full: illustration2Image,
+    title: '似顏繪明信片',
+    type: 'single'
+  }
+];
+
+const categories = [
+  { id: 'identity', title: 'IDENTITY', color: 'bg-neutral-300', image: identityImage, position: 'object-left', works: identityWorks },
+  { id: 'layout', title: 'LAYOUT', color: 'bg-neutral-100', image: layoutImage, customClass: 'scale-[1.8]', works: layoutWorks },
+  { id: 'package', title: 'PACKAGE DESIGN', color: 'bg-neutral-400', image: packageImage, works: packageWorks },
+  { id: 'illustration', title: 'ILLUSTRATION', color: 'bg-neutral-200', image: illustrationImage, works: illustrationWorks },
+  { id: 'another', title: 'ANOTHER', color: 'bg-neutral-500', image: another1Image, works: anotherWorks },
+];
+
+export default function App() {
+  const [activeSection, setActiveSection] = useState('home');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedWork, setSelectedWork] = useState<Work | null>(null);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const mouseXSpring = useSpring(mouseX, { damping: 25, stiffness: 200, mass: 0.5 });
+  const mouseYSpring = useSpring(mouseY, { damping: 25, stiffness: 200, mass: 0.5 });
+  const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500, mass: 0.1 });
+  const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500, mass: 0.1 });
+
+  useEffect(() => {
+    if (selectedCategory || selectedWork || enlargedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedCategory, selectedWork, enlargedImage]);
+
+  useEffect(() => {
+    let touchTimeout: NodeJS.Timeout;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches[0]) {
+        mouseX.set(e.touches[0].clientX);
+        mouseY.set(e.touches[0].clientY);
+      }
+    };
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches[0]) {
+        mouseX.set(e.touches[0].clientX);
+        mouseY.set(e.touches[0].clientY);
+        
+        const target = e.target as
