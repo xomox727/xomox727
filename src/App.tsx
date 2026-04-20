@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
 
 // ==========================================
-// 🚨 圖片路徑配置
+// 🚀 圖片路徑配置 (已完整對齊 GitHub Pages /xomox727/)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -197,10 +197,11 @@ export default function App() {
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  
+  // 🎯 滑鼠互動狀態
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const [isHovering, setIsHovering] = useState(false);
-
   const mouseXSpring = useSpring(mouseX, { damping: 25, stiffness: 200, mass: 0.5 });
   const mouseYSpring = useSpring(mouseY, { damping: 25, stiffness: 200, mass: 0.5 });
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500, mass: 0.1 });
@@ -214,6 +215,7 @@ export default function App() {
     }
   }, [selectedCategory, selectedWork, enlargedImage]);
 
+  // 🖱️ 滑鼠位置監聽
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
@@ -222,6 +224,25 @@ export default function App() {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
+
+  // 📜 捲動監聽 (修正導覽列發亮與回到頂部按鈕)
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'work', 'about', 'contact'];
+      const current = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top <= 200 && rect.bottom >= 200;
+        }
+        return false;
+      });
+      if (current) setActiveSection(current);
+      setShowBackToTop(window.scrollY > 800);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.add('dark');
@@ -233,9 +254,35 @@ export default function App() {
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500">
+    <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500 overflow-x-hidden">
+      
+      {/* 🛠️ 全局樣式：解決圖片縮放抖動感 */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        img { 
+          backface-visibility: hidden; 
+          transform-translate-z: 0; 
+          will-change: transform;
+        }
+      `}} />
+
+      {/* 頂部閱讀進度條 */}
       <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]" style={{ scaleX }} />
       
+      {/* ✨ 滑鼠跟蹤球設計 */}
+      <motion.div
+        className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100] shadow-sm overflow-hidden"
+        style={{ x: mouseXSpring, y: mouseYSpring, translateX: '-50%', translateY: '-50%' }}
+        animate={{
+          backgroundColor: isHovering ? '#ffd9f9' : '#2e406f',
+          scale: isHovering ? 1.5 : 1,
+          opacity: isHovering ? 0.6 : 1,
+        }}
+      />
+      <motion.div
+        className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white"
+        style={{ x: dotXSpring, y: dotYSpring, translateX: '-50%', translateY: '-50%' }}
+      />
+
       <Navigation activeSection={activeSection} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsHovering={setIsHovering} />
 
       <main className="flex-1 w-full">
