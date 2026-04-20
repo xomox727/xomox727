@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
 
 // ==========================================
-// 🚨 所有圖片路徑已對齊 GitHub Pages 子目錄 /xomox727/
+// 🚨 圖片路徑配置
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -43,12 +43,10 @@ const layout3Pic2 = '/xomox727/layout3-pic2.png';
 const identity2Image = '/xomox727/identity-2.svg';
 const identity2Pic1 = '/xomox727/identity2-pic1.svg';
 const identity2Pic2 = '/xomox727/identity2-pic2.png';
-
 const identity3Image = '/xomox727/identity-3.svg'; 
 const identity3Pic1 = '/xomox727/identity3-pic1.png';
 const identity3Pic2 = '/xomox727/identity3-pic2.png';
 const identity3Pic3 = '/xomox727/identity3-pic3.png';
-
 const identity4Image = '/xomox727/identity-4.svg';
 const identity4Pic1 = '/xomox727/identity4-pic1.png';
 const identity4Pic2 = '/xomox727/identity4-pic2.png';
@@ -92,11 +90,7 @@ const anotherWorks: Work[] = [
     type: 'gallery', 
     title: '社群通知貼圖',
     contain: true,
-    galleryImages: [
-      another6Pic1,
-      another6Pic2,
-      another6Pic3
-    ]
+    galleryImages: [another6Pic1, another6Pic2, another6Pic3]
   },
 ];
 
@@ -109,10 +103,7 @@ const identityWorks: Work[] = [
     type: 'gallery',
     contain: true,
     imageClass: 'object-left p-2',
-    galleryImages: [
-      identityGallery1,
-      identityGallery2
-    ]
+    galleryImages: [identityGallery1, identityGallery2]
   },
   {
     id: 'identity-1',
@@ -120,24 +111,17 @@ const identityWorks: Work[] = [
     full: identity2Image,
     title: '小黑手工饅頭',
     type: 'gallery',
-    galleryImages: [
-      identity2Pic1,
-      identity2Pic2
-    ]
+    galleryImages: [identity2Pic1, identity2Pic2]
   },
   {
     id: 'identity-2',
     thumb: identity3Image,
     full: identity3Image,
     title: '弘霖工程行',
-    type: 'gallery', // 這裡補上了引號
+    type: 'gallery',
     contain: true,
     imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40', 
-    galleryImages: [
-      identity3Pic1,
-      identity3Pic2,
-      identity3Pic3
-    ]
+    galleryImages: [identity3Pic1, identity3Pic2, identity3Pic3]
   },
   {
     id: 'identity-3',
@@ -146,11 +130,7 @@ const identityWorks: Work[] = [
     title: 'MYJ服飾',
     type: 'gallery',
     contain: true,
-    galleryImages: [
-      identity4Pic1,
-      identity4Pic2,
-      identity4Pic3
-    ]
+    galleryImages: [identity4Pic1, identity4Pic2, identity4Pic3]
   },
   {
     id: 'identity-4',
@@ -159,10 +139,7 @@ const identityWorks: Work[] = [
     title: '台式馬卡龍',
     type: 'gallery',
     contain: true,
-    galleryImages: [
-      identity5Pic1,
-      identity5Pic2
-    ]
+    galleryImages: [identity5Pic1, identity5Pic2]
   }
 ];
 
@@ -173,11 +150,7 @@ const layoutWorks: Work[] = [
     full: layout1Image,
     title: '菜單',
     type: 'gallery',
-    galleryImages: [
-      layout1Pic1,
-      layout1Pic2,
-      layout1Pic3
-    ]
+    galleryImages: [layout1Pic1, layout1Pic2, layout1Pic3]
   },
   {
     id: 'layout-1',
@@ -185,10 +158,7 @@ const layoutWorks: Work[] = [
     full: layout2Image,
     title: '西螺老屋再造計畫手冊',
     type: 'gallery',
-    galleryImages: [
-      layoutGallery1,
-      layoutGallery2
-    ]
+    galleryImages: [layoutGallery1, layoutGallery2]
   },
   {
     id: 'layout-2',
@@ -198,45 +168,18 @@ const layoutWorks: Work[] = [
     type: 'gallery',
     contain: true,
     imageClass: 'p-10',
-    galleryImages: [
-      layout3Pic1,
-      layout3Pic2
-    ]
+    galleryImages: [layout3Pic1, layout3Pic2]
   }
 ];
 
 const packageWorks: Work[] = [
-  {
-    id: 'package-0',
-    thumb: package1Image,
-    full: package1Image,
-    title: 'MOOD咖啡包、外帶杯',
-    type: 'single'
-  },
-  {
-    id: 'package-1',
-    thumb: package2Image,
-    full: package2Image,
-    title: '甜點包裝',
-    type: 'single'
-  }
+  { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'single' },
+  { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'single' }
 ];
 
 const illustrationWorks: Work[] = [
-  {
-    id: 'illustration-0',
-    thumb: illustration1Image,
-    full: illustration1Image,
-    title: '明信片設計',
-    type: 'single'
-  },
-  {
-    id: 'illustration-1',
-    thumb: illustration2Image,
-    full: illustration2Image,
-    title: '似顏繪明信片',
-    type: 'single'
-  }
+  { id: 'illustration-0', thumb: illustration1Image, full: illustration1Image, title: '明信片設計', type: 'single' },
+  { id: 'illustration-1', thumb: illustration2Image, full: illustration2Image, title: '似顏繪明信片', type: 'single' }
 ];
 
 const categories = [
@@ -269,27 +212,51 @@ export default function App() {
     } else {
       document.body.style.overflow = 'unset';
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
   }, [selectedCategory, selectedWork, enlargedImage]);
 
   useEffect(() => {
-    let touchTimeout: NodeJS.Timeout;
-
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches[0]) {
-        mouseX.set(e.touches[0].clientX);
-        mouseY.set(e.touches[0].clientY);
-      }
-    };
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches[0]) {
-        mouseX.set(e.touches[0].clientX);
-        mouseY.set(e.touches[0].clientY);
-        
-        const target = e.target as
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  useEffect(() => {
+    if (isDarkMode) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, [isDarkMode]);
+
+  const activeCategoryData = categories.find(c => c.id === selectedCategory);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+
+  return (
+    <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500">
+      <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]" style={{ scaleX }} />
+      
+      <Navigation activeSection={activeSection} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsHovering={setIsHovering} />
+
+      <main className="flex-1 w-full">
+        <HomeHero isDarkMode={isDarkMode} heroMobileImage={heroMobileImage} heroSvg={heroSvg} heroMobileDarkImage={heroMobileDarkImage} heroDarkSvg={heroDarkSvg} />
+        <WorkSection categories={categories} setSelectedCategory={setSelectedCategory} setIsHovering={setIsHovering} />
+        <AboutSection />
+        <ContactSection setIsHovering={setIsHovering} />
+      </main>
+
+      <Footer />
+
+      <Modals 
+        activeCategoryData={activeCategoryData}
+        setSelectedCategory={setSelectedCategory}
+        selectedWork={selectedWork}
+        setSelectedWork={setSelectedWork}
+        enlargedImage={enlargedImage}
+        setEnlargedImage={setEnlargedImage}
+        setIsHovering={setIsHovering}
+        isDarkMode={isDarkMode}
+      />
+    </div>
+  );
+}
