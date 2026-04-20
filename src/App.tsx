@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
 
 // ==========================================
-// 🚨 這裡已經幫你把所有路徑補上 /xomox727/ 了
+// 🚨 所有圖片路徑已對齊 GitHub Pages 子目錄 /xomox727/
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -43,10 +43,13 @@ const layout3Pic2 = '/xomox727/layout3-pic2.png';
 const identity2Image = '/xomox727/identity-2.svg';
 const identity2Pic1 = '/xomox727/identity2-pic1.svg';
 const identity2Pic2 = '/xomox727/identity2-pic2.png';
-const identity3Image = '/xomox727/identity-3.png';
+
+// 👇 這裡已更正為 SVG
+const identity3Image = '/xomox727/identity-3.svg'; 
 const identity3Pic1 = '/xomox727/identity3-pic1.png';
 const identity3Pic2 = '/xomox727/identity3-pic2.png';
 const identity3Pic3 = '/xomox727/identity3-pic3.png';
+
 const identity4Image = '/xomox727/identity-4.svg';
 const identity4Pic1 = '/xomox727/identity4-pic1.png';
 const identity4Pic2 = '/xomox727/identity4-pic2.png';
@@ -130,7 +133,8 @@ const identityWorks: Work[] = [
     title: '弘霖工程行',
     type: 'gallery',
     contain: true,
-    imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40',
+    // 👇 移除複雜濾鏡以確保 SVG 在手機端正常顯示
+    imageClass: '', 
     galleryImages: [
       identity3Pic1,
       identity3Pic2,
@@ -256,13 +260,11 @@ export default function App() {
   const mouseY = useMotionValue(0);
   const [isHovering, setIsHovering] = useState(false);
 
-  // Smooth springs for the cursor
   const mouseXSpring = useSpring(mouseX, { damping: 25, stiffness: 200, mass: 0.5 });
   const mouseYSpring = useSpring(mouseY, { damping: 25, stiffness: 200, mass: 0.5 });
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500, mass: 0.1 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500, mass: 0.1 });
 
-  // Prevent body scrolling when a modal is open
   useEffect(() => {
     if (selectedCategory || selectedWork || enlargedImage) {
       document.body.style.overflow = 'hidden';
@@ -304,7 +306,6 @@ export default function App() {
       }
     };
     const handleTouchEnd = () => {
-      // Delay the un-hover so the color switch animation has time to be seen by the user on mobile
       touchTimeout = setTimeout(() => {
         setIsHovering(false);
       }, 400);
@@ -362,7 +363,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-900 transition-colors duration-500 overflow-x-hidden">
-      {/* Liquid Glass SVG Filter */}
       <svg width="0" height="0" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
         <defs>
           <filter id="liquid_glass_filter">
@@ -373,10 +373,8 @@ export default function App() {
         </defs>
       </svg>
 
-      {/* Global Noise Texture for cohesion */}
       <div className="fixed inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-50 mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} aria-hidden="true"></div>
 
-      {/* Scroll Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]"
         style={{ scaleX }}
@@ -387,7 +385,6 @@ export default function App() {
         aria-hidden="true"
       />
 
-      {/* Custom Cursor - Hidden on mobile for better UX */}
       <motion.div
         className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100] shadow-sm overflow-hidden will-change-transform"
         style={{ 
@@ -402,7 +399,6 @@ export default function App() {
           opacity: isHovering ? 0.8 : 1,
         }}
       >
-        {/* Grainy Texture Overlay */}
         <div className="absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
       </motion.div>
       <motion.div
@@ -417,11 +413,9 @@ export default function App() {
           backgroundColor: isHovering ? '#ffffff' : '#ffd9f9',
         }}
       >
-        {/* Grainy Texture Overlay for small dot */}
         <div className="absolute inset-0 opacity-40 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
       </motion.div>
 
-      {/* Back to Top Button */}
       <AnimatePresence>
         {showBackToTop && (
           <motion.button
@@ -436,49 +430,4 @@ export default function App() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 19V5M12 5L5 12M12 5L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      <Navigation 
-        activeSection={activeSection} 
-        isDarkMode={isDarkMode} 
-        setIsDarkMode={setIsDarkMode} 
-        setIsHovering={setIsHovering} 
-      />
-
-      <main id="main-content" className="flex-1 w-full">
-        <HomeHero 
-          isDarkMode={isDarkMode} 
-          heroMobileImage={heroMobileImage} 
-          heroSvg={heroSvg} 
-          heroMobileDarkImage={heroMobileDarkImage} 
-          heroDarkSvg={heroDarkSvg} 
-        />
-
-        <WorkSection 
-          categories={categories} 
-          setSelectedCategory={setSelectedCategory} 
-          setIsHovering={setIsHovering} 
-        />
-
-        <AboutSection />
-
-        <ContactSection setIsHovering={setIsHovering} />
-      </main>
-
-      <Footer />
-
-      <Modals 
-        activeCategoryData={activeCategoryData}
-        setSelectedCategory={setSelectedCategory}
-        selectedWork={selectedWork}
-        setSelectedWork={setSelectedWork}
-        enlargedImage={enlargedImage}
-        setEnlargedImage={setEnlargedImage}
-        setIsHovering={setIsHovering}
-        isDarkMode={isDarkMode}
-      />
-    </div>
-  );
-}
+          </motion.button
