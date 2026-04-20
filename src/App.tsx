@@ -5,7 +5,6 @@
 
 import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
-import { Sun, Moon } from 'lucide-react';
 
 // ==========================================
 // 🚀 圖片路徑配置 (對齊 GitHub Pages)
@@ -66,19 +65,10 @@ import { AboutSection, ContactSection } from './components/AboutContact';
 import { Footer } from './components/Footer';
 import { Modals } from './components/Modals';
 
-type Work = {
-  id: string;
-  thumb: string;
-  full: string;
-  title?: string;
-  type?: 'single' | 'gallery';
-  galleryImages?: string[];
-  contain?: boolean;
-  imageClass?: string;
-};
+type Work = { id: string; thumb: string; full: string; title?: string; type?: 'single' | 'gallery'; galleryImages?: string[]; contain?: boolean; imageClass?: string; };
 
 // ==========================================
-// 📦 完整作品資料陣列 (不再省略)
+// 📦 作品資料陣列 (已壓縮排版防止斷尾)
 // ==========================================
 const anotherWorks: Work[] = [
   { id: 'another-0', thumb: another1Image, full: another1Image, type: 'single', title: '廣宣品' },
@@ -86,95 +76,163 @@ const anotherWorks: Work[] = [
   { id: 'another-2', thumb: another3Image, full: another3Image, type: 'single', title: '刀模客製' },
   { id: 'another-3', thumb: another4Image, full: another4Image, type: 'single', title: '亞馬遜電商Premium A+' },
   { id: 'another-4', thumb: another5Image, full: another5Image, type: 'single', title: '蝦皮電商圖' },
-  { 
-    id: 'another-5', 
-    thumb: another6Image, 
-    full: another6Image, 
-    type: 'gallery', 
-    title: '社群通知貼圖',
-    contain: true,
-    galleryImages: [another6Pic1, another6Pic2, another6Pic3]
-  },
+  { id: 'another-5', thumb: another6Image, full: another6Image, type: 'gallery', title: '社群通知貼圖', contain: true, galleryImages: [another6Pic1, another6Pic2, another6Pic3] }
 ];
 
 const identityWorks: Work[] = [
-  {
-    id: 'identity-0',
-    thumb: identity1Image,
-    full: identity1Image,
-    title: '攝影展主視覺',
-    type: 'gallery',
-    contain: true,
-    imageClass: 'object-left p-2',
-    galleryImages: [identityGallery1, identityGallery2]
-  },
-  {
-    id: 'identity-1',
-    thumb: identity2Image,
-    full: identity2Image,
-    title: '小黑手工饅頭',
-    type: 'gallery',
-    galleryImages: [identity2Pic1, identity2Pic2]
-  },
-  {
-    id: 'identity-2',
-    thumb: identity3Image,
-    full: identity3Image,
-    title: '弘霖工程行',
-    type: 'gallery',
-    contain: true,
-    imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40', 
-    galleryImages: [identity3Pic1, identity3Pic2, identity3Pic3]
-  },
-  {
-    id: 'identity-3',
-    thumb: identity4Image,
-    full: identity4Image,
-    title: 'MYJ服飾',
-    type: 'gallery',
-    contain: true,
-    galleryImages: [identity4Pic1, identity4Pic2, identity4Pic3]
-  },
-  {
-    id: 'identity-4',
-    thumb: identity5Image,
-    full: identity5Image,
-    title: '台式馬卡龍',
-    type: 'gallery',
-    contain: true,
-    galleryImages: [identity5Pic1, identity5Pic2]
-  }
+  { id: 'identity-0', thumb: identity1Image, full: identity1Image, title: '攝影展主視覺', type: 'gallery', contain: true, imageClass: 'object-left p-2', galleryImages: [identityGallery1, identityGallery2] },
+  { id: 'identity-1', thumb: identity2Image, full: identity2Image, title: '小黑手工饅頭', type: 'gallery', galleryImages: [identity2Pic1, identity2Pic2] },
+  { id: 'identity-2', thumb: identity3Image, full: identity3Image, title: '弘霖工程行', type: 'gallery', contain: true, imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40', galleryImages: [identity3Pic1, identity3Pic2, identity3Pic3] },
+  { id: 'identity-3', thumb: identity4Image, full: identity4Image, title: 'MYJ服飾', type: 'gallery', contain: true, galleryImages: [identity4Pic1, identity4Pic2, identity4Pic3] },
+  { id: 'identity-4', thumb: identity5Image, full: identity5Image, title: '台式馬卡龍', type: 'gallery', contain: true, galleryImages: [identity5Pic1, identity5Pic2] }
 ];
 
 const layoutWorks: Work[] = [
-  {
-    id: 'layout-0',
-    thumb: layout1Image,
-    full: layout1Image,
-    title: '菜單',
-    type: 'gallery',
-    galleryImages: [layout1Pic1, layout1Pic2, layout1Pic3]
-  },
-  {
-    id: 'layout-1',
-    thumb: layout2Image,
-    full: layout2Image,
-    title: '西螺老屋再造計畫手冊',
-    type: 'gallery',
-    galleryImages: [layoutGallery1, layoutGallery2]
-  },
-  {
-    id: 'layout-2',
-    thumb: layout3Image,
-    full: layout3Image,
-    title: '吉福堂',
-    type: 'gallery',
-    contain: true,
-    imageClass: 'p-10',
-    galleryImages: [layout3Pic1, layout3Pic2]
-  }
+  { id: 'layout-0', thumb: layout1Image, full: layout1Image, title: '菜單', type: 'gallery', galleryImages: [layout1Pic1, layout1Pic2, layout1Pic3] },
+  { id: 'layout-1', thumb: layout2Image, full: layout2Image, title: '西螺老屋再造計畫手冊', type: 'gallery', galleryImages: [layoutGallery1, layoutGallery2] },
+  { id: 'layout-2', thumb: layout3Image, full: layout3Image, title: '吉福堂', type: 'gallery', contain: true, imageClass: 'p-10', galleryImages: [layout3Pic1, layout3Pic2] }
 ];
 
 const packageWorks: Work[] = [
   { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'single' },
-  { id: 'package-1', thumb: package2Image, full: package2Image, title:
+  { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'single' }
+];
+
+const illustrationWorks: Work[] = [
+  { id: 'illustration-0', thumb: illustration1Image, full: illustration1Image, title: '明信片設計', type: 'single' },
+  { id: 'illustration-1', thumb: illustration2Image, full: illustration2Image, title: '似顏繪明信片', type: 'single' }
+];
+
+const categories = [
+  { id: 'identity', title: 'IDENTITY', color: 'bg-neutral-300', image: identityImage, position: 'object-left', works: identityWorks },
+  { id: 'layout', title: 'LAYOUT', color: 'bg-neutral-100', image: layoutImage, customClass: 'scale-[1.8]', works: layoutWorks },
+  { id: 'package', title: 'PACKAGE DESIGN', color: 'bg-neutral-400', image: packageImage, works: packageWorks },
+  { id: 'illustration', title: 'ILLUSTRATION', color: 'bg-neutral-200', image: illustrationImage, works: illustrationWorks },
+  { id: 'another', title: 'ANOTHER', color: 'bg-neutral-500', image: another1Image, works: anotherWorks },
+];
+
+export default function App() {
+  const [activeSection, setActiveSection] = useState('home');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedWork, setSelectedWork] = useState<Work | null>(null);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const mouseXSpring = useSpring(mouseX, { damping: 25, stiffness: 200 });
+  const mouseYSpring = useSpring(mouseY, { damping: 25, stiffness: 200 });
+  const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
+  const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
+
+  useEffect(() => {
+    if (selectedCategory || selectedWork || enlargedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [selectedCategory, selectedWork, enlargedImage]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'work', 'about', 'contact'];
+      const current = sections.find(section => {
+        const el = document.getElementById(section);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          return rect.top <= 200 && rect.bottom >= 200;
+        }
+        return false;
+      });
+      if (current) setActiveSection(current);
+      setShowBackToTop(window.scrollY > 800);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isDarkMode) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, [isDarkMode]);
+
+  const activeCategoryData = categories.find(c => c.id === selectedCategory);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+
+  return (
+    <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500 overflow-x-hidden">
+      
+      {/* 🛠️ 終極防抖 CSS：改用 GPU 直接渲染 */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .category-card img, .work-card img {
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          will-change: transform;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          transform: translateZ(0) scale(1);
+        }
+        .category-card:hover img {
+          transform: translateZ(0) scale(1.08) !important;
+        }
+        .category-card {
+          isolation: isolate;
+          overflow: hidden;
+        }
+      `}} />
+
+      <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]" style={{ scaleX }} />
+      
+      {/* ✨ 雙層滑鼠球 */}
+      <motion.div
+        className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100]"
+        style={{ x: mouseXSpring, y: mouseYSpring, translateX: '-50%', translateY: '-50%' }}
+        animate={{
+          backgroundColor: isHovering ? '#ffd9f9' : '#2e406f',
+          scale: isHovering ? 1.5 : 1,
+          opacity: isHovering ? 0.6 : 1,
+        }}
+      />
+      <motion.div
+        className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white"
+        style={{ x: dotXSpring, y: dotYSpring, translateX: '-50%', translateY: '-50%' }}
+      />
+
+      <Navigation activeSection={activeSection} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsHovering={setIsHovering} />
+
+      <main className="flex-1 w-full">
+        <HomeHero isDarkMode={isDarkMode} heroMobileImage={heroMobileImage} heroSvg={heroSvg} heroMobileDarkImage={heroMobileDarkImage} heroDarkSvg={heroDarkSvg} />
+        
+        {/* 作品五格區域 */}
+        <WorkSection categories={categories} setSelectedCategory={setSelectedCategory} setIsHovering={setIsHovering} />
+        
+        <AboutSection />
+        <ContactSection setIsHovering={setIsHovering} />
+      </main>
+
+      <Footer />
+
+      <Modals 
+        activeCategoryData={activeCategoryData}
+        setSelectedCategory={setSelectedCategory}
+        selectedWork={selectedWork}
+        setSelectedWork={setSelectedWork}
+        enlargedImage={enlargedImage}
+        setEnlargedImage={setEnlargedImage}
+        setIsHovering={setIsHovering}
+        isDarkMode={isDarkMode}
+      />
+    </div>
+  );
+}
