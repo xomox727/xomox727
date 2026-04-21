@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (保證 100% 留存)
+// 🚀 圖片路徑配置 (100% 留存)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -114,39 +114,40 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  // 💡 關鍵：捲動鎖定，防止置頂動畫期間重複觸發歷史紀錄
   const isScrollingToTop = useRef(false);
 
   // ==========================================
-  // ✨ 網頁版/平板：置頂與緩衝歷史邏輯
+  // ✨ 核心修復：接管捲動控制權
   // ==========================================
   useEffect(() => {
+    // 禁止瀏覽器自動恢復捲動位置，防止衝突
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       const parts = hash.split('/');
       const catId = parts[0];
 
-      // 1. 如果 Hash 變空（按上一頁回到起點）
       if (!hash || hash === 'home') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
 
-        // 如果目前不在最頂端，執行平滑置頂
-        if (window.scrollY > 50) {
+        if (window.scrollY > 20) {
           isScrollingToTop.current = true;
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          // 動畫結束後釋放鎖定
-          setTimeout(() => { isScrollingToTop.current = false; }, 800);
+          // 強制同步 Bar 顯示為 Home
+          setActiveSection('home'); 
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+          setTimeout(() => { isScrollingToTop.current = false; }, 1000);
         }
       } 
-      // 2. 緩衝點狀態
       else if (hash === 'view') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
       } 
-      // 3. 作品詳細層級
       else {
         const currentCat = categories.find(c => c.id === catId);
         if (currentCat) {
@@ -164,18 +165,15 @@ export default function App() {
       }
     };
 
-    // 監聽手動捲動：只要離開頂部，就塞入唯一緩衝點
     const handleManualScroll = () => {
       if (isScrollingToTop.current || selectedCategory || selectedWork || enlargedImage) return;
 
-      const isPastHero = window.scrollY > 200;
+      const isPastHero = window.scrollY > 150;
       const currentHash = window.location.hash;
 
       if (isPastHero && !currentHash) {
-        // 離開頂部：推入緩衝點
         window.history.pushState({ isView: true }, '', '#view');
       } else if (!isPastHero && currentHash === '#view') {
-        // 滑回頂部：徹底洗掉緩衝紀錄
         window.history.replaceState(null, '', window.location.pathname);
       }
     };
@@ -190,30 +188,26 @@ export default function App() {
     };
   }, [selectedCategory, selectedWork, enlargedImage]);
 
-  // ==========================================
-  // 🖱️ 導覽列：使用 replaceState 防止歷史紀錄堆疊
-  // ==========================================
   const handleNavClick = (id: string) => {
     if (id === 'home') {
       isScrollingToTop.current = true;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setActiveSection('home');
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       window.history.replaceState(null, '', window.location.pathname);
-      setTimeout(() => { isScrollingToTop.current = false; }, 800);
+      setTimeout(() => { isScrollingToTop.current = false; }, 1000);
       setSelectedCategory(null);
     } else {
       const el = document.getElementById(id);
       if (el) {
-        // 確保網址列有 #view 但不增加歷史深度
         window.history.replaceState(null, '', '#view');
         el.scrollIntoView({ behavior: 'smooth' });
       }
     }
   };
 
-  // 🖱️ 交互攔截
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) window.location.hash = id;
-    else window.history.back(); // 往回退到 #view 或 空
+    else window.history.back();
   };
 
   const handleSetSelectedWork = (work: Work | null) => {
@@ -227,9 +221,6 @@ export default function App() {
     } else window.history.back();
   };
 
-  // ==========================================
-  // ⌨️ 基本設定 (移除手機版複雜鎖定)
-  // ==========================================
   useEffect(() => {
     if (selectedCategory || selectedWork || enlargedImage) {
       document.body.style.overflow = 'hidden';
@@ -259,7 +250,9 @@ export default function App() {
 
   useEffect(() => {
     const handleScroll = () => {
+      // 💡 關鍵修復：如果在自動置頂期間，不要讓偵測器亂切導覽列狀態
       if (isScrollingToTop.current) return;
+      
       const sections = ['home', 'work', 'about', 'contact'];
       const current = sections.find(section => {
         const el = document.getElementById(section);
