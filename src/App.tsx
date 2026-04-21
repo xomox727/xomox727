@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (一字未動，保證圖片都在)
+// 🚀 圖片路徑配置 (保證 100% 留存)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -114,39 +114,33 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  const isAutoScrolling = useRef(false);
+  const scrollRef = useRef(0);
 
   // ==========================================
-  // ✨ 終極修復：初始化歷史墊層 (防止手機滑移關站)
+  // ✨ 核心：網頁版隨時返回置頂 & 手機版 Threads 層級
   // ==========================================
   useEffect(() => {
-    // 進入頁面時，如果網址是空的，強制推一個 #home 歷史紀錄
-    // 這樣在手機上按返回，會先回到空網址（首頁頂部），而不會直接關閉瀏覽器
-    if (!window.location.hash) {
-      window.history.replaceState({ base: true }, '', window.location.pathname);
-      window.history.pushState({ base: true }, '', '#home');
-    }
-
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       const parts = hash.split('/');
       const catId = parts[0];
 
-      // 層級判定邏輯
-      if (!hash || hash === 'home') {
+      // 1. 如果 Hash 為空 -> 代表使用者按了「上一頁」回到最起點
+      if (!hash) {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-        if (window.scrollY > 50) {
-          isAutoScrolling.current = true;
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          setTimeout(() => isAutoScrolling.current = false, 800);
-        }
-      } else if (hash === 'view') {
+        // 強制平滑捲動回 Hero 頂部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } 
+      // 2. 如果是正在瀏覽狀態 (#view)
+      else if (hash === 'view') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-      } else {
+      } 
+      // 3. 進入彈窗層級
+      else {
         const currentCat = categories.find(c => c.id === catId);
         if (currentCat) {
           setSelectedCategory(catId);
@@ -163,67 +157,92 @@ export default function App() {
       }
     };
 
+    // 監聽手動捲動：只要離開頂部，就塞入 #view 讓「上一頁」有地方可以退
+    const handleManualScroll = () => {
+      if (selectedCategory || selectedWork || enlargedImage) return;
+
+      const isPastHero = window.scrollY > 100;
+      const currentHash = window.location.hash;
+
+      if (isPastHero && !currentHash) {
+        // 第一次離開頂部，推入 #view
+        window.history.pushState({ view: true }, '', '#view');
+      } else if (!isPastHero && currentHash === '#view') {
+        // 回到頂部，洗掉 #view
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    };
+
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange();
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+    window.addEventListener('scroll', handleManualScroll);
+    handleHashChange(); 
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('scroll', handleManualScroll);
+    };
+  }, [selectedCategory, selectedWork, enlargedImage]);
 
   // ==========================================
-  // ✨ 核心修復：正確的返回攔截器
+  // ✨ 背景凍結 (防止手機版背景跑位)
   // ==========================================
+  useEffect(() => {
+    const body = document.body;
+    if (selectedCategory || selectedWork || enlargedImage) {
+      if (body.style.position !== 'fixed') {
+        scrollRef.current = window.scrollY;
+        body.style.position = 'fixed';
+        body.style.top = `-${scrollRef.current}px`;
+        body.style.width = '100%';
+        body.style.overflowY = 'scroll';
+      }
+    } else {
+      if (body.style.position === 'fixed') {
+        body.style.position = '';
+        body.style.top = '';
+        body.style.width = '';
+        body.style.overflowY = '';
+        window.scrollTo(0, scrollRef.current);
+      }
+    }
+  }, [selectedCategory, selectedWork, enlargedImage]);
+
+  // 🖱️ 導覽列點擊處理：使用 replaceState 避免鬼打牆紀錄
+  const handleNavClick = (id: string) => {
+    if (id === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.history.replaceState(null, '', window.location.pathname);
+      setSelectedCategory(null);
+    } else {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        // 確保網址至少有一次 #view 紀錄，讓「返回」能置頂
+        if (window.location.hash !== '#view') {
+          window.history.pushState({ view: true }, '', '#view');
+        }
+      }
+    }
+  };
+
+  // 🖱️ 彈窗交互攔截 (維持層級)
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) window.location.hash = id;
-    else window.history.back(); // 觸發瀏覽器返回，維持層級
+    else window.history.back(); // 退回上一層 (#view)
   };
 
   const handleSetSelectedWork = (work: Work | null) => {
     if (work && selectedCategory) window.location.hash = `${selectedCategory}/${work.id}`;
-    else window.history.back(); // 觸發瀏覽器返回，回到分類層
+    else window.history.back(); // 退回上一層 (分類)
   };
 
   const handleSetEnlargedImage = (img: string | null) => {
     if (img && selectedCategory && selectedWork) {
       window.location.hash = `${selectedCategory}/${selectedWork.id}/${encodeURIComponent(img)}`;
-    } else window.history.back(); // 觸發瀏覽器返回，回到子作品層
+    } else window.history.back(); // 退回上一層 (子作品)
   };
 
-  // 背景凍結黑科技
-  useEffect(() => {
-    const body = document.body;
-    if (selectedCategory || selectedWork || enlargedImage) {
-      if (body.style.position !== 'fixed') {
-        const scrollY = window.scrollY;
-        body.style.position = 'fixed';
-        body.style.top = `-${scrollY}px`;
-        body.style.width = '100%';
-        body.style.overflowY = 'scroll';
-        body.dataset.saveY = scrollY.toString();
-      }
-    } else {
-      const savedY = body.dataset.saveY;
-      if (savedY) {
-        body.style.position = '';
-        body.style.top = '';
-        body.style.width = '';
-        body.style.overflowY = '';
-        window.scrollTo(0, parseInt(savedY));
-        delete body.dataset.saveY;
-      }
-    }
-  }, [selectedCategory, selectedWork, enlargedImage]);
-
-  const handleNavClick = (id: string) => {
-    if (id === 'home') window.location.hash = 'home';
-    else {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        // 確保網址至少有一次紀錄，這樣「返回」才能回頂部
-        if (window.location.hash !== '#view') window.history.pushState(null, '', '#view');
-      }
-    }
-  };
-
+  // ⌨️ ESC 鍵關閉
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && (selectedCategory || selectedWork || enlargedImage)) {
@@ -245,7 +264,7 @@ export default function App() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (isAutoScrolling.current) return;
+      if (selectedCategory || selectedWork || enlargedImage) return;
       const sections = ['home', 'work', 'about', 'contact'];
       const current = sections.find(section => {
         const el = document.getElementById(section);
@@ -260,7 +279,7 @@ export default function App() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [selectedCategory, selectedWork, enlargedImage]);
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.add('dark');
