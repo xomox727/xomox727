@@ -124,7 +124,7 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  // 1. 攔截導覽列點擊：只滾動，不留歷史紀錄！
+  // 1. 攔截導覽列點擊：只滾動，不留任何歷史紀錄
   useEffect(() => {
     const handleNavClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -134,7 +134,7 @@ export default function App() {
         const pageSections = ['home', 'work', 'about', 'contact'];
 
         if (id && pageSections.includes(id)) {
-          e.preventDefault(); // 阻止網址改變
+          e.preventDefault(); 
           if (id === 'home') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else {
@@ -152,7 +152,7 @@ export default function App() {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       
-      // 如果按上一頁導致網址空掉，就直接關閉所有作品，留在原地不動！
+      // 按上一頁導致網址空掉，就直接關閉所有作品
       if (!hash || ['home', 'work', 'about', 'contact'].includes(hash)) {
         setSelectedCategory(null);
         setSelectedWork(null);
@@ -194,7 +194,7 @@ export default function App() {
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
-      document.body.style.overflowY = 'scroll'; // 避免捲軸消失畫面抖動
+      document.body.style.overflowY = 'scroll'; 
     } else {
       const scrollY = document.body.style.top;
       document.body.style.position = '';
@@ -207,7 +207,7 @@ export default function App() {
     }
   }, [selectedCategory, selectedWork, enlargedImage]);
 
-  // 🖱️ 攔截器 1：設定分類 (手動關閉時，用 replaceState 悄悄清空網址)
+  // 🖱️ 攔截器 1：設定分類
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) {
       window.location.hash = id; 
@@ -314,4 +314,37 @@ export default function App() {
         animate={{
           backgroundColor: isHovering ? '#ffd9f9' : '#2e406f',
           scale: isHovering ? 1.5 : 1,
-          opacity: isHovering ? 0.6 : 1
+          opacity: isHovering ? 0.6 : 1,
+        }}
+      />
+      <motion.div
+        className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white"
+        style={{ x: dotXSpring, y: dotYSpring, translateX: '-50%', translateY: '-50%' }}
+      />
+
+      <Navigation activeSection={activeSection} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsHovering={setIsHovering} />
+
+      <main className="flex-1 w-full">
+        <HomeHero isDarkMode={isDarkMode} heroMobileImage={heroMobileImage} heroSvg={heroSvg} heroMobileDarkImage={heroMobileDarkImage} heroDarkSvg={heroDarkSvg} />
+        
+        <WorkSection categories={categories} setSelectedCategory={handleSetSelectedCategory} setIsHovering={setIsHovering} />
+        
+        <AboutSection />
+        <ContactSection setIsHovering={setIsHovering} />
+      </main>
+
+      <Footer />
+
+      <Modals 
+        activeCategoryData={activeCategoryData}
+        setSelectedCategory={handleSetSelectedCategory}
+        selectedWork={selectedWork}
+        setSelectedWork={handleSetSelectedWork} 
+        enlargedImage={enlargedImage}
+        setEnlargedImage={handleSetEnlargedImage} 
+        setIsHovering={setIsHovering}
+        isDarkMode={isDarkMode}
+      />
+    </div>
+  );
+}
