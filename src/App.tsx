@@ -67,9 +67,6 @@ import { Modals } from './components/Modals';
 
 type Work = { id: string; thumb: string; full: string; title?: string; type?: 'single' | 'gallery'; galleryImages?: string[]; contain?: boolean; imageClass?: string; };
 
-// ==========================================
-// 📦 資料重構：統一使用 gallery 邏輯來達成「點擊返回」
-// ==========================================
 const anotherWorks: Work[] = [
   { id: 'another-0', thumb: another1Image, full: another1Image, type: 'gallery', galleryImages: [another1Image], title: '廣宣品' },
   { id: 'another-1', thumb: another2Image, full: another2Image, type: 'gallery', galleryImages: [another2Image], title: '資訊圖資' },
@@ -129,8 +126,18 @@ export default function App() {
 
   const isScrollingRef = useRef(false);
 
+  // 💡 防護鎖：解決手機版觸控「事件冒泡(Bubbling)」導致的一鍵雙退問題
+  const navLock = useRef(false);
+  const executeNav = (action: () => void) => {
+    if (navLock.current) return;
+    navLock.current = true;
+    action();
+    // 0.1秒的保護期，遮蔽多餘的穿透點擊
+    setTimeout(() => { navLock.current = false; }, 100);
+  };
+
   // ==========================================
-  // ✨ 狀態跟隨網址：準確切分「區塊」與「彈窗」
+  // ✨ 狀態跟隨網址同步
   // ==========================================
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
@@ -141,11 +148,13 @@ export default function App() {
       const hash = window.location.hash.replace('#', '');
       const parts = hash.split('/');
       
+      // 狀態 A：網址清空，退回頂部首頁
       if (hash === '') {
-        setActiveSection('home');
+        setActiveSection('home'); 
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
+        
         if (window.scrollY > 20) {
           isScrollingRef.current = true;
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -154,17 +163,19 @@ export default function App() {
         return;
       }
 
+      // 狀態 B：一般區塊切換
       if (['work', 'about', 'contact'].includes(hash)) {
-        setActiveSection(hash);
+        setActiveSection(hash); 
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
         return;
       }
 
+      // 狀態 C：彈窗層級
       const catId = parts[0];
       const workId = parts[1];
-      const imgUrl = parts[2];
+      const imgParam = parts[2]; // 改為接收 img-0 格式
 
       const currentCat = categories.find(c => c.id === catId);
       if (currentCat) {
@@ -172,7 +183,17 @@ export default function App() {
         if (workId) {
           const currentWork = currentCat.works?.find(w => w.id === workId);
           setSelectedWork(currentWork || null);
-          setEnlargedImage(imgUrl ? decodeURIComponent(imgUrl) : null);
+
+          // ✨ 解析安全的圖片索引網址
+          if (imgParam && imgParam.startsWith('img-') && currentWork?.galleryImages) {
+            const idx = parseInt(imgParam.replace('img-', ''), 10);
+            setEnlargedImage(currentWork.galleryImages[idx] || null);
+          } else if (imgParam) {
+            // 防呆處理
+            setEnlargedImage(decodeURIComponent(imgParam));
+          } else {
+            setEnlargedImage(null);
+          }
         } else {
           setSelectedWork(null);
           setEnlargedImage(null);
@@ -228,51 +249,61 @@ export default function App() {
   }, [activeSection]);
 
   // ==========================================
-  // 🖱️ 交互攔截器：零延遲強制更新狀態
+  // 🖱️ 交互攔截器：引入防護鎖
   // ==========================================
   const handleNavClick = (id: string) => {
-    if (id === 'home') {
-      setActiveSection('home');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      window.history.replaceState(null, '', window.location.pathname);
-    } else {
-      const el = document.getElementById(id);
-      if (el) {
-        if (!window.location.hash) {
-          window.history.pushState(null, '', `#${id}`);
-        } else if (['work', 'about', 'contact'].includes(window.location.hash.replace('#', ''))) {
-          window.history.replaceState(null, '', `#${id}`);
+    executeNav(() => {
+      if (id === 'home') {
+        setActiveSection('home');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.history.replaceState(null, '', window.location.pathname);
+      } else {
+        const el = document.getElementById(id);
+        if (el) {
+          if (!window.location.hash) {
+            window.history.pushState(null, '', `#${id}`);
+          } else if (['work', 'about', 'contact'].includes(window.location.hash.replace('#', ''))) {
+            window.history.replaceState(null, '', `#${id}`);
+          }
+          el.scrollIntoView({ behavior: 'smooth' });
         }
-        el.scrollIntoView({ behavior: 'smooth' });
       }
-    }
+    });
   };
 
   const handleSetSelectedCategory = (id: string | null) => {
-    if (id) {
-      setSelectedCategory(id);
-      window.history.pushState(null, '', `#${id}`);
-    } else {
-      window.history.back();
-    }
+    executeNav(() => {
+      if (id) {
+        setSelectedCategory(id);
+        window.history.pushState(null, '', `#${id}`);
+      } else {
+        window.history.back();
+      }
+    });
   };
 
   const handleSetSelectedWork = (work: Work | null) => {
-    if (work && selectedCategory) {
-      setSelectedWork(work);
-      window.history.pushState(null, '', `#${selectedCategory}/${work.id}`);
-    } else {
-      window.history.back();
-    }
+    executeNav(() => {
+      if (work && selectedCategory) {
+        setSelectedWork(work);
+        window.history.pushState(null, '', `#${selectedCategory}/${work.id}`);
+      } else {
+        window.history.back();
+      }
+    });
   };
 
   const handleSetEnlargedImage = (img: string | null) => {
-    if (img && selectedCategory && selectedWork) {
-      setEnlargedImage(img);
-      window.history.pushState(null, '', `#${selectedCategory}/${selectedWork.id}/${encodeURIComponent(img)}`);
-    } else {
-      window.history.back();
-    }
+    executeNav(() => {
+      if (img && selectedCategory && selectedWork) {
+        setEnlargedImage(img);
+        // ✨ 使用安全的 Index，避免特殊字元在手機上造成當機
+        const imgIndex = selectedWork.galleryImages?.findIndex(x => x === img) ?? 0;
+        window.history.pushState(null, '', `#${selectedCategory}/${selectedWork.id}/img-${imgIndex}`);
+      } else {
+        window.history.back();
+      }
+    });
   };
 
   useEffect(() => {
