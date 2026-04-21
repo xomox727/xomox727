@@ -1,138 +1,109 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
+import { useState, useEffect, useMemo } from 'react';
 import { WorkSection } from './components/WorkSection';
-import { AboutSection } from './components/AboutSection';
-import { ContactSection } from './components/ContactSection';
-import { CursorCustom } from './components/CursorCustom';
-// 如果你有 ProjectDetail 組件，請取消註釋下方這行
-// import { ProjectDetail } from './components/ProjectDetail';
+
+// 💡 溫馨提醒：等你把這些檔案建立好之後，再把前面的 // 刪掉來啟用它們！
+// import { Navbar } from './components/Navbar';
+// import { Hero } from './components/Hero';
+// import { AboutSection } from './components/AboutSection';
+// import { ContactSection } from './components/ContactSection';
+// import { CursorCustom } from './components/CursorCustom';
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
 
-  // 1. 核心邏輯：監聽網址 Hash 變化，實現「上一頁」返回功能
+  // 1. 監聽網址 Hash 變化，實現「上一頁」返回功能
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       
-      // 定義你現有的頁面錨點，避免跟作品 ID 混淆
+      // 這是你網頁的四大區塊，如果網址是這些，代表沒有要打開作品
       const pageSections = ['home', 'work', 'about', 'contact'];
       
       if (!hash || pageSections.includes(hash)) {
         setSelectedCategory(null);
-        if (hash) setActiveSection(hash);
       } else {
-        // 如果 Hash 不屬於頁面錨點，則視為作品分類 ID
-        setSelectedCategory(hash);
+        setSelectedCategory(hash); // 網址是 branding 等 ID 時，打開作品
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // 初始載入檢查
+    handleHashChange(); 
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // 2. 關閉作品詳細內容的函數
-  const closeDetail = useCallback(() => {
-    window.location.hash = "#work"; // 關閉時回到作品區塊的網址
-  }, []);
+  // 2. 關閉作品視窗的邏輯
+  const closeDetail = () => {
+    window.location.hash = "work"; 
+  };
 
-  // 3. 你的作品分類資料 (請根據你的實際內容修改)
+  // 3. 你的作品資料
   const categoriesData = useMemo(() => [
-    { id: 'branding', title: 'BRAND IDENTIFICATION', color: 'bg-zinc-200', image: '/images/branding-cover.jpg' },
-    { id: 'packaging', title: 'PACKAGING DESIGN', color: 'bg-stone-200', image: '/images/packaging-cover.jpg' },
-    { id: 'visual', title: 'VISUAL STRATEGY', color: 'bg-neutral-200', image: '/images/visual-cover.jpg' },
-    { id: 'advertising', title: 'ADVERTISING', color: 'bg-gray-200', image: '/images/adv-cover.jpg' },
-    { id: 'photography', title: 'PHOTOGRAPHY', color: 'bg-zinc-300', image: '/images/photo-cover.jpg' },
+    { id: 'branding', title: 'BRAND IDENTIFICATION', color: 'bg-zinc-200', image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80' },
+    { id: 'packaging', title: 'PACKAGING DESIGN', color: 'bg-stone-200', image: 'https://images.unsplash.com/photo-1530533335057-0fe91f2d9ad6?auto=format&fit=crop&q=80' },
+    { id: 'visual', title: 'VISUAL STRATEGY', color: 'bg-neutral-200', image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80' },
+    { id: 'advertising', title: 'ADVERTISING', color: 'bg-gray-200', image: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&q=80' },
+    { id: 'photography', title: 'PHOTOGRAPHY', color: 'bg-zinc-300', image: 'https://images.unsplash.com/photo-1493723843671-1d655e7d98f0?auto=format&fit=crop&q=80' },
   ], []);
 
   return (
-    <div className="bg-[#f8f8f8] min-h-screen font-sans selection:bg-brand/30">
-      {/* 自定義游標 */}
-      <CursorCustom isHovering={isHovering} />
+    <div className="bg-[#f8f8f8] min-h-screen font-sans selection:bg-brand/30 relative">
+      
+      {/* 臨時的導航欄 Placeholder (等你做好 Navbar 組件就可以替換掉這塊) */}
+      <nav className="fixed top-0 w-full p-6 flex justify-between items-center z-[40] mix-blend-difference text-white">
+        <div className="font-bold tracking-widest text-sm">GUAN WEI</div>
+        <div className="flex gap-6 text-xs tracking-widest">
+          <a href="#home" className="hover:opacity-50 transition-opacity">HOME</a>
+          <a href="#work" className="hover:opacity-50 transition-opacity">WORK</a>
+          <a href="#about" className="hover:opacity-50 transition-opacity">ABOUT</a>
+          <a href="#contact" className="hover:opacity-50 transition-opacity">CONTACT</a>
+        </div>
+      </nav>
 
-      {/* 導航欄 */}
-      <Navbar activeSection={activeSection} />
-
-      {/* 主要內容區塊 */}
       <main>
-        <Hero />
-        
+        {/* 1. 首頁 Hero 區塊 Placeholder */}
+        <section id="home" className="min-h-screen flex items-center justify-center bg-neutral-200 text-neutral-400">
+          <h1 className="text-4xl tracking-widest font-light">HERO SECTION</h1>
+        </section>
+
+        {/* 2. 核心作品區塊 (真實組件) */}
         <WorkSection 
           categories={categoriesData} 
           selectedCategory={selectedCategory}
-          setSelectedCategory={(id) => {
-            if(id) window.location.hash = id;
-            else window.location.hash = "#work";
-          }}
           setIsHovering={setIsHovering}
         />
 
-        <AboutSection />
-        
-        <ContactSection />
+        {/* 3. 關於我 About 區塊 Placeholder */}
+        <section id="about" className="min-h-screen flex items-center justify-center bg-white text-neutral-400">
+          <h2 className="text-4xl tracking-widest font-light">ABOUT SECTION</h2>
+        </section>
+
+        {/* 4. 聯絡 Contact 區塊 Placeholder */}
+        <section id="contact" className="min-h-[50vh] flex items-center justify-center bg-black text-white/50">
+          <h2 className="text-4xl tracking-widest font-light">CONTACT SECTION</h2>
+        </section>
       </main>
 
-      {/* 4. 作品詳細內容彈出層 (Overlay) */}
+      {/* 作品詳細內容彈出層 */}
       {selectedCategory && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto bg-white animate-in fade-in slide-in-from-bottom-4 duration-500">
-          {/* 關閉按鈕 */}
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-white p-6 md:p-12 animate-in fade-in duration-300">
           <button 
             onClick={closeDetail}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            className="fixed top-8 right-8 md:top-12 md:right-12 z-[110] group flex items-center gap-2"
+            className="fixed top-6 right-6 md:top-12 md:right-12 z-[110] w-12 h-12 rounded-full border border-black/10 flex items-center justify-center bg-white hover:bg-black hover:text-white transition-all cursor-pointer"
           >
-            <span className="text-[10px] tracking-[0.3em] font-bold opacity-0 group-hover:opacity-100 transition-opacity">CLOSE</span>
-            <div className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center bg-white/80 backdrop-blur-md hover:bg-black hover:text-white transition-all">
-              ✕
-            </div>
+            ✕
           </button>
 
-          {/* 作品內容容器 */}
-          <article className="max-w-5xl mx-auto px-6 py-24 md:py-32">
-            <header className="mb-16">
-              <p className="text-xs tracking-[0.4em] text-black/40 mb-4 uppercase">Project Category</p>
-              <h1 className="text-5xl md:text-7xl font-light tracking-tighter uppercase">
-                {categoriesData.find(c => c.id === selectedCategory)?.title || selectedCategory}
-              </h1>
-            </header>
-
-            {/* 這裡可以根據 selectedCategory 渲染不同的作品內容 */}
-            <div className="space-y-12">
-              <div className="aspect-[16/9] bg-neutral-100 rounded-3xl overflow-hidden">
-                 {/* <ProjectDetail id={selectedCategory} /> */}
-                 <div className="w-full h-full flex items-center justify-center text-sm tracking-widest text-black/20 italic">
-                   CONTENT LOADING...
-                 </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-sm">
-                <div className="space-y-4">
-                  <h4 className="font-bold tracking-widest uppercase">Challenge</h4>
-                  <p className="text-black/60 leading-relaxed">針對品牌核心價值進行視覺重塑，在極簡與溫度之間取得平衡。</p>
-                </div>
-                <div className="space-y-4">
-                  <h4 className="font-bold tracking-widest uppercase">Solution</h4>
-                  <p className="text-black/60 leading-relaxed">運用 RWD 技術與流暢互動，提升數位載體的品牌專業感。</p>
-                </div>
-                <div className="space-y-4">
-                  <h4 className="font-bold tracking-widest uppercase">Role</h4>
-                  <p className="text-black/60 leading-relaxed">Art Direction / UI Design / Frontend Development</p>
-                </div>
-              </div>
+          <article className="max-w-5xl mx-auto pt-16 md:pt-24">
+            <h1 className="text-4xl md:text-6xl font-light uppercase tracking-tighter mb-10">
+              {categoriesData.find(c => c.id === selectedCategory)?.title || selectedCategory}
+            </h1>
+            <div className="aspect-video bg-neutral-100 rounded-3xl flex items-center justify-center text-neutral-400 tracking-widest text-sm">
+              這裡放 {selectedCategory} 的專案詳細圖文...
             </div>
           </article>
         </div>
       )}
-
-      {/* 頁尾 */}
-      <footer className="py-12 text-center text-[10px] tracking-[0.2em] text-black/30 border-t border-black/5">
-        © {new Date().getFullYear()} GUAN WEI DESIGN. ALL RIGHTS RESERVED.
-      </footer>
     </div>
   );
 }
