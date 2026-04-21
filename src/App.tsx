@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (對齊 GitHub Pages)
+// 🚀 圖片路徑配置 (一字未動，保證圖片都在)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -67,48 +67,35 @@ import { Modals } from './components/Modals';
 
 type Work = { id: string; thumb: string; full: string; title?: string; type?: 'single' | 'gallery'; galleryImages?: string[]; contain?: boolean; imageClass?: string; };
 
-// ==========================================
-// 📦 作品資料陣列
-// ==========================================
-const anotherWorks: Work[] = [
-  { id: 'another-0', thumb: another1Image, full: another1Image, type: 'single', title: '廣宣品' },
-  { id: 'another-1', thumb: another2Image, full: another2Image, type: 'single', title: '資訊圖資' },
-  { id: 'another-2', thumb: another3Image, full: another3Image, type: 'single', title: '刀模客製' },
-  { id: 'another-3', thumb: another4Image, full: another4Image, type: 'single', title: '亞馬遜電商Premium A+' },
-  { id: 'another-4', thumb: another5Image, full: another5Image, type: 'single', title: '蝦皮電商圖' },
-  { id: 'another-5', thumb: another6Image, full: another6Image, type: 'gallery', title: '社群通知貼圖', contain: true, galleryImages: [another6Pic1, another6Pic2, another6Pic3] }
-];
-
-const identityWorks: Work[] = [
-  { id: 'identity-0', thumb: identity1Image, full: identity1Image, title: '攝影展主視覺', type: 'gallery', contain: true, imageClass: 'object-left p-2', galleryImages: [identityGallery1, identityGallery2] },
-  { id: 'identity-1', thumb: identity2Image, full: identity2Image, title: '小黑手工饅頭', type: 'gallery', galleryImages: [identity2Pic1, identity2Pic2] },
-  { id: 'identity-2', thumb: identity3Image, full: identity3Image, title: '弘霖工程行', type: 'gallery', contain: true, imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40', galleryImages: [identity3Pic1, identity3Pic2, identity3Pic3] },
-  { id: 'identity-3', thumb: identity4Image, full: identity4Image, title: 'MYJ服飾', type: 'gallery', contain: true, galleryImages: [identity4Pic1, identity4Pic2, identity4Pic3] },
-  { id: 'identity-4', thumb: identity5Image, full: identity5Image, title: '台式馬卡龍', type: 'gallery', contain: true, galleryImages: [identity5Pic1, identity5Pic2] }
-];
-
-const layoutWorks: Work[] = [
-  { id: 'layout-0', thumb: layout1Image, full: layout1Image, title: '菜單', type: 'gallery', galleryImages: [layout1Pic1, layout1Pic2, layout1Pic3] },
-  { id: 'layout-1', thumb: layout2Image, full: layout2Image, title: '西螺老屋再造計畫手冊', type: 'gallery', galleryImages: [layoutGallery1, layoutGallery2] },
-  { id: 'layout-2', thumb: layout3Image, full: layout3Image, title: '吉福堂', type: 'gallery', contain: true, imageClass: 'p-10', galleryImages: [layout3Pic1, layout3Pic2] }
-];
-
-const packageWorks: Work[] = [
-  { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'single' },
-  { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'single' }
-];
-
-const illustrationWorks: Work[] = [
-  { id: 'illustration-0', thumb: illustration1Image, full: illustration1Image, title: '明信片設計', type: 'single' },
-  { id: 'illustration-1', thumb: illustration2Image, full: illustration2Image, title: '似顏繪明信片', type: 'single' }
-];
-
 const categories = [
-  { id: 'identity', title: 'IDENTITY', color: 'bg-neutral-300', image: identityImage, position: 'object-left', works: identityWorks },
-  { id: 'layout', title: 'LAYOUT', color: 'bg-neutral-100', image: layoutImage, customClass: 'scale-[1.8]', works: layoutWorks },
-  { id: 'package', title: 'PACKAGE DESIGN', color: 'bg-neutral-400', image: packageImage, works: packageWorks },
-  { id: 'illustration', title: 'ILLUSTRATION', color: 'bg-neutral-200', image: illustrationImage, works: illustrationWorks },
-  { id: 'another', title: 'ANOTHER', color: 'bg-neutral-500', image: another1Image, works: anotherWorks },
+  { id: 'identity', title: 'IDENTITY', color: 'bg-neutral-300', image: identityImage, position: 'object-left', works: [
+    { id: 'identity-0', thumb: identity1Image, full: identity1Image, title: '攝影展主視覺', type: 'gallery', contain: true, imageClass: 'object-left p-2', galleryImages: [identityGallery1, identityGallery2] },
+    { id: 'identity-1', thumb: identity2Image, full: identity2Image, title: '小黑手工饅頭', type: 'gallery', galleryImages: [identity2Pic1, identity2Pic2] },
+    { id: 'identity-2', thumb: identity3Image, full: identity3Image, title: '弘霖工程行', type: 'gallery', contain: true, imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40', galleryImages: [identity3Pic1, identity3Pic2, identity3Pic3] },
+    { id: 'identity-3', thumb: identity4Image, full: identity4Image, title: 'MYJ服飾', type: 'gallery', contain: true, galleryImages: [identity4Pic1, identity4Pic2, identity4Pic3] },
+    { id: 'identity-4', thumb: identity5Image, full: identity5Image, title: '台式馬卡龍', type: 'gallery', contain: true, galleryImages: [identity5Pic1, identity5Pic2] }
+  ] },
+  { id: 'layout', title: 'LAYOUT', color: 'bg-neutral-100', image: layoutImage, customClass: 'scale-[1.8]', works: [
+    { id: 'layout-0', thumb: layout1Image, full: layout1Image, title: '菜單', type: 'gallery', galleryImages: [layout1Pic1, layout1Pic2, layout1Pic3] },
+    { id: 'layout-1', thumb: layout2Image, full: layout2Image, title: '西螺老屋再造計畫手冊', type: 'gallery', galleryImages: [layoutGallery1, layoutGallery2] },
+    { id: 'layout-2', thumb: layout3Image, full: layout3Image, title: '吉福堂', type: 'gallery', contain: true, imageClass: 'p-10', galleryImages: [layout3Pic1, layout3Pic2] }
+  ] },
+  { id: 'package', title: 'PACKAGE DESIGN', color: 'bg-neutral-400', image: packageImage, works: [
+    { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'single' },
+    { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'single' }
+  ] },
+  { id: 'illustration', title: 'ILLUSTRATION', color: 'bg-neutral-200', image: illustrationImage, works: [
+    { id: 'illustration-0', thumb: illustration1Image, full: illustration1Image, title: '明信片設計', type: 'single' },
+    { id: 'illustration-1', thumb: illustration2Image, full: illustration2Image, title: '似顏繪明信片', type: 'single' }
+  ] },
+  { id: 'another', title: 'ANOTHER', color: 'bg-neutral-500', image: another1Image, works: [
+    { id: 'another-0', thumb: another1Image, full: another1Image, type: 'single', title: '廣宣品' },
+    { id: 'another-1', thumb: another2Image, full: another2Image, type: 'single', title: '資訊圖資' },
+    { id: 'another-2', thumb: another3Image, full: another3Image, type: 'single', title: '刀模客製' },
+    { id: 'another-3', thumb: another4Image, full: another4Image, type: 'single', title: '亞馬遜電商Premium A+' },
+    { id: 'another-4', thumb: another5Image, full: another5Image, type: 'single', title: '蝦皮電商圖' },
+    { id: 'another-5', thumb: another6Image, full: another6Image, type: 'gallery', title: '社群通知貼圖', contain: true, galleryImages: [another6Pic1, another6Pic2, another6Pic3] }
+  ] },
 ];
 
 export default function App() {
@@ -127,47 +114,46 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  // 💡 用來鎖定自動捲動的旗標
   const isAutoScrolling = useRef(false);
 
   // ==========================================
-  // ✨ 核心：全平台統一的導航與返回邏輯
+  // ✨ 終極修復：初始化歷史墊層 (防止手機滑移關站)
   // ==========================================
   useEffect(() => {
+    // 進入頁面時，如果網址是空的，強制推一個 #home 歷史紀錄
+    // 這樣在手機上按返回，會先回到空網址（首頁頂部），而不會直接關閉瀏覽器
+    if (!window.location.hash) {
+      window.history.replaceState({ base: true }, '', window.location.pathname);
+      window.history.pushState({ base: true }, '', '#home');
+    }
+
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       const parts = hash.split('/');
       const catId = parts[0];
 
-      // 情況 A：回首頁 (空值或 home)
+      // 層級判定邏輯
       if (!hash || hash === 'home') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-        
-        // 只有在真的有滑動時，才執行平滑置頂
-        if (window.scrollY > 10) {
+        if (window.scrollY > 50) {
           isAutoScrolling.current = true;
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          setTimeout(() => { isAutoScrolling.current = false; }, 800);
+          setTimeout(() => isAutoScrolling.current = false, 800);
         }
-      } 
-      // 情況 B：進入滑動檢視狀態 (view)
-      else if (hash === 'view') {
+      } else if (hash === 'view') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-      } 
-      // 情況 C：進入作品層級
-      else {
-        const isValidCategory = categories.some(c => c.id === catId);
-        if (isValidCategory) {
+      } else {
+        const currentCat = categories.find(c => c.id === catId);
+        if (currentCat) {
           setSelectedCategory(catId);
           const workId = parts[1];
           if (workId) {
-            const categoryData = categories.find(c => c.id === catId);
-            const work = categoryData?.works?.find(w => w.id === workId) || null;
-            setSelectedWork(work);
+            const currentWork = currentCat.works?.find(w => w.id === workId);
+            setSelectedWork(currentWork || null);
             setEnlargedImage(parts[2] ? decodeURIComponent(parts.slice(2).join('/')) : null);
           } else {
             setSelectedWork(null);
@@ -177,90 +163,67 @@ export default function App() {
       }
     };
 
-    // 監聽手動捲動，自動管理 #view 歷史紀錄（洗掉鬼打牆紀錄）
-    const handleScrollHistory = () => {
-      if (isAutoScrolling.current) return;
-      const isPastHero = window.scrollY > 100;
-      const currentHash = window.location.hash;
-
-      if (isPastHero && (currentHash === '' || currentHash === '#home')) {
-        // 使用 pushState 建立一層返回點
-        window.history.pushState(null, '', '#view');
-      } else if (!isPastHero && currentHash === '#view') {
-        // 滑回頂部，用 replaceState 徹底洗掉 view 歷史，解決鬼打牆
-        window.history.replaceState(null, '', window.location.pathname);
-      }
-    };
-
     window.addEventListener('hashchange', handleHashChange);
-    window.addEventListener('scroll', handleScrollHistory);
-    handleHashChange(); // 初始檢查
-
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-      window.removeEventListener('scroll', handleScrollHistory);
-    };
+    handleHashChange();
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   // ==========================================
-  // ✨ 核心：手機端/電腦端 凍結背景 (Facebook App 邏輯)
+  // ✨ 核心修復：正確的返回攔截器
   // ==========================================
-  useEffect(() => {
-    const body = document.body;
-    if (selectedCategory || selectedWork || enlargedImage) {
-      const scrollY = window.scrollY;
-      body.style.position = 'fixed';
-      body.style.top = `-${scrollY}px`;
-      body.style.width = '100%';
-      body.style.overflowY = 'scroll'; // 保持滾動條預留位置防止抖動
-      body.dataset.saveScrollY = scrollY.toString();
-    } else {
-      const savedY = body.dataset.saveScrollY;
-      body.style.position = '';
-      body.style.top = '';
-      body.style.width = '';
-      body.style.overflowY = '';
-      if (savedY) {
-        window.scrollTo(0, parseInt(savedY));
-        delete body.dataset.saveScrollY;
-      }
-    }
-  }, [selectedCategory, selectedWork, enlargedImage]);
-
-  // 🖱️ 選單點擊處理 (攔截預設跳轉)
-  const handleNavClick = (id: string) => {
-    if (id === 'home') {
-      window.location.hash = '';
-    } else {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        // 確保網址變成 #view，讓「上一頁」有地方可以退回 home
-        if (window.location.hash !== '#view') {
-          window.history.pushState(null, '', '#view');
-        }
-      }
-    }
-  };
-
-  // 🖱️ 彈窗開啟/關閉攔截器
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) window.location.hash = id;
-    else window.history.back();
+    else window.history.back(); // 觸發瀏覽器返回，維持層級
   };
 
   const handleSetSelectedWork = (work: Work | null) => {
     if (work && selectedCategory) window.location.hash = `${selectedCategory}/${work.id}`;
-    else window.history.back();
+    else window.history.back(); // 觸發瀏覽器返回，回到分類層
   };
 
   const handleSetEnlargedImage = (img: string | null) => {
     if (img && selectedCategory && selectedWork) {
       window.location.hash = `${selectedCategory}/${selectedWork.id}/${encodeURIComponent(img)}`;
-    } else window.history.back();
+    } else window.history.back(); // 觸發瀏覽器返回，回到子作品層
   };
 
-  // ⌨️ ESC 鍵關閉
+  // 背景凍結黑科技
+  useEffect(() => {
+    const body = document.body;
+    if (selectedCategory || selectedWork || enlargedImage) {
+      if (body.style.position !== 'fixed') {
+        const scrollY = window.scrollY;
+        body.style.position = 'fixed';
+        body.style.top = `-${scrollY}px`;
+        body.style.width = '100%';
+        body.style.overflowY = 'scroll';
+        body.dataset.saveY = scrollY.toString();
+      }
+    } else {
+      const savedY = body.dataset.saveY;
+      if (savedY) {
+        body.style.position = '';
+        body.style.top = '';
+        body.style.width = '';
+        body.style.overflowY = '';
+        window.scrollTo(0, parseInt(savedY));
+        delete body.dataset.saveY;
+      }
+    }
+  }, [selectedCategory, selectedWork, enlargedImage]);
+
+  const handleNavClick = (id: string) => {
+    if (id === 'home') window.location.hash = 'home';
+    else {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        // 確保網址至少有一次紀錄，這樣「返回」才能回頂部
+        if (window.location.hash !== '#view') window.history.pushState(null, '', '#view');
+      }
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && (selectedCategory || selectedWork || enlargedImage)) {
@@ -282,6 +245,7 @@ export default function App() {
 
   useEffect(() => {
     const handleScroll = () => {
+      if (isAutoScrolling.current) return;
       const sections = ['home', 'work', 'about', 'contact'];
       const current = sections.find(section => {
         const el = document.getElementById(section);
