@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (100% 留存)
+// 🚀 圖片路徑配置 (保證 100% 留存，一字未改)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -114,92 +114,143 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  const isScrollingToTop = useRef(false);
+  // 💡 確保平滑捲動時不會跟網址狀態打架
+  const isScrollingRef = useRef(false);
 
   // ==========================================
-  // ✨ 核心修復：接管捲動控制權
+  // ✨ 業界標準 1：狀態跟隨 URL 改變 (Hash-Driven)
   // ==========================================
   useEffect(() => {
-    // 禁止瀏覽器自動恢復捲動位置，防止衝突
+    // 禁用瀏覽器預設的返回跳轉機制，由我們接管
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
 
-    const handleHashChange = () => {
+    const syncStateWithHash = () => {
       const hash = window.location.hash.replace('#', '');
       const parts = hash.split('/');
-      const catId = parts[0];
-
-      if (!hash || hash === 'home') {
+      
+      // 狀態 A：網址清空，代表要退回頂部首頁
+      if (hash === '') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-
+        
         if (window.scrollY > 20) {
-          isScrollingToTop.current = true;
-          // 強制同步 Bar 顯示為 Home
-          setActiveSection('home'); 
-          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-          setTimeout(() => { isScrollingToTop.current = false; }, 1000);
+          isScrollingRef.current = true;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => { isScrollingRef.current = false; }, 800);
         }
-      } 
-      else if (hash === 'view') {
+        return;
+      }
+
+      // 狀態 B：正在往下瀏覽 (view 緩衝點)
+      if (hash === 'view') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-      } 
-      else {
-        const currentCat = categories.find(c => c.id === catId);
-        if (currentCat) {
-          setSelectedCategory(catId);
-          const workId = parts[1];
-          if (workId) {
-            const currentWork = currentCat.works?.find(w => w.id === workId);
-            setSelectedWork(currentWork || null);
-            setEnlargedImage(parts[2] ? decodeURIComponent(parts.slice(2).join('/')) : null);
-          } else {
-            setSelectedWork(null);
-            setEnlargedImage(null);
-          }
+        return;
+      }
+
+      // 狀態 C：彈窗層級
+      const catId = parts[0];
+      const workId = parts[1];
+      const imgUrl = parts[2];
+
+      const currentCat = categories.find(c => c.id === catId);
+      if (currentCat) {
+        setSelectedCategory(catId);
+        if (workId) {
+          const currentWork = currentCat.works?.find(w => w.id === workId);
+          setSelectedWork(currentWork || null);
+          setEnlargedImage(imgUrl ? decodeURIComponent(imgUrl) : null);
+        } else {
+          setSelectedWork(null);
+          setEnlargedImage(null);
         }
       }
     };
 
-    const handleManualScroll = () => {
-      if (isScrollingToTop.current || selectedCategory || selectedWork || enlargedImage) return;
+    window.addEventListener('hashchange', syncStateWithHash);
+    syncStateWithHash(); // 初次載入同步
 
-      const isPastHero = window.scrollY > 150;
-      const currentHash = window.location.hash;
+    return () => window.removeEventListener('hashchange', syncStateWithHash);
+  }, []);
 
-      if (isPastHero && !currentHash) {
-        window.history.pushState({ isView: true }, '', '#view');
-      } else if (!isPastHero && currentHash === '#view') {
-        window.history.replaceState(null, '', window.location.pathname);
+  // ==========================================
+  // ✨ 業界標準 2：防抖(Debounce) 的滑動緩衝
+  // ==========================================
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      // 彈窗打開時，或系統正在幫使用者滾回頂部時，不要紀錄滑動歷史
+      if (selectedCategory || isScrollingRef.current) return;
+
+      clearTimeout(scrollTimeout);
+      
+      // 停下滾動 100 毫秒後，才結算歷史紀錄（避免動畫過程中狂塞紀錄）
+      scrollTimeout = setTimeout(() => {
+        const isPastHero = window.scrollY > window.innerHeight * 0.3;
+        const currentHash = window.location.hash;
+
+        // 如果離開頂部，且網址是空的，推進一層 #view 讓上一頁有得按
+        if (isPastHero && currentHash === '') {
+          window.history.pushState(null, '', '#view');
+        } 
+        // 如果手動滑回頂部，用 replace 徹底洗掉網址，確保再按一次上一頁直接離開網站
+        else if (!isPastHero && currentHash === '#view') {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }, 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [selectedCategory]);
+
+  // ==========================================
+  // ✨ 業界標準 3：原生 App 背景凍結 (iOS/Android)
+  // ==========================================
+  useEffect(() => {
+    const body = document.body;
+    
+    // 開啟任何一個 Modal 時
+    if (selectedCategory) {
+      if (body.style.position !== 'fixed') {
+        const scrollY = window.scrollY;
+        body.style.position = 'fixed';
+        body.style.top = `-${scrollY}px`;
+        body.style.width = '100%';
+        // 紀錄座標
+        body.dataset.y = scrollY.toString();
       }
-    };
+    } 
+    // 所有 Modal 關閉時
+    else {
+      if (body.style.position === 'fixed') {
+        const scrollY = body.dataset.y;
+        body.style.position = '';
+        body.style.top = '';
+        body.style.width = '';
+        // 瞬間精準回到滑動位置
+        window.scrollTo(0, parseInt(scrollY || '0'));
+      }
+    }
+  }, [selectedCategory]); // 只要最外層 modal 觸發一次鎖定即可
 
-    window.addEventListener('hashchange', handleHashChange);
-    window.addEventListener('scroll', handleManualScroll);
-    handleHashChange(); 
-
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-      window.removeEventListener('scroll', handleManualScroll);
-    };
-  }, [selectedCategory, selectedWork, enlargedImage]);
-
+  // ==========================================
+  // 🖱️ 動作觸發器：所有關閉都交給瀏覽器原生 `back()`
+  // ==========================================
   const handleNavClick = (id: string) => {
     if (id === 'home') {
-      isScrollingToTop.current = true;
-      setActiveSection('home');
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-      window.history.replaceState(null, '', window.location.pathname);
-      setTimeout(() => { isScrollingToTop.current = false; }, 1000);
-      setSelectedCategory(null);
+      // 點擊 Home：直接清空網址並平滑滾動。由 hashchange 統一處理
+      window.location.hash = ''; 
     } else {
       const el = document.getElementById(id);
       if (el) {
-        window.history.replaceState(null, '', '#view');
+        // 如果目前網址沒東西，塞入 #view 當緩衝
+        if (!window.location.hash) window.history.pushState(null, '', '#view');
         el.scrollIntoView({ behavior: 'smooth' });
       }
     }
@@ -207,7 +258,7 @@ export default function App() {
 
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) window.location.hash = id;
-    else window.history.back();
+    else window.history.back(); 
   };
 
   const handleSetSelectedWork = (work: Work | null) => {
@@ -221,14 +272,7 @@ export default function App() {
     } else window.history.back();
   };
 
-  useEffect(() => {
-    if (selectedCategory || selectedWork || enlargedImage) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [selectedCategory, selectedWork, enlargedImage]);
-
+  // ⌨️ ESC 鍵防護
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && (selectedCategory || selectedWork || enlargedImage)) {
@@ -250,9 +294,7 @@ export default function App() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // 💡 關鍵修復：如果在自動置頂期間，不要讓偵測器亂切導覽列狀態
-      if (isScrollingToTop.current) return;
-      
+      if (isScrollingRef.current) return;
       const sections = ['home', 'work', 'about', 'contact'];
       const current = sections.find(section => {
         const el = document.getElementById(section);
