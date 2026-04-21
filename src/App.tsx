@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (保證 100% 留存，一字未改)
+// 🚀 圖片路徑配置 (保證 100% 留存)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -116,9 +116,6 @@ export default function App() {
 
   const isScrollingRef = useRef(false);
 
-  // ==========================================
-  // ✨ 狀態跟隨網址：準確切分「區塊」與「彈窗」
-  // ==========================================
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
@@ -130,6 +127,7 @@ export default function App() {
       
       // 狀態 A：網址清空，代表退回首頁頂部
       if (hash === '') {
+        setActiveSection('home'); // 💡 強制且立刻更新導覽列狀態為 HOME
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
@@ -142,15 +140,14 @@ export default function App() {
         return;
       }
 
-      // 狀態 B：只是滑動到其他區塊 (work, about, contact)
       if (['work', 'about', 'contact'].includes(hash)) {
+        setActiveSection(hash); // 💡 同步更新導覽列狀態
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
         return;
       }
 
-      // 狀態 C：彈窗層級 (分類 > 子作品 > 放大圖)
       const catId = parts[0];
       const workId = parts[1];
       const imgUrl = parts[2];
@@ -179,9 +176,6 @@ export default function App() {
     };
   }, []);
 
-  // ==========================================
-  // ✨ 精確滾動同步：滑到哪，網址就變成哪一區
-  // ==========================================
   useEffect(() => {
     const handleScroll = () => {
       if (document.body.classList.contains('modal-open') || isScrollingRef.current) return;
@@ -191,7 +185,6 @@ export default function App() {
         const el = document.getElementById(section);
         if (el) {
           const rect = el.getBoundingClientRect();
-          // 用畫面中間的基準點來判斷現在看到哪一區
           return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
         }
         return false;
@@ -203,10 +196,8 @@ export default function App() {
         const currentHash = window.location.hash.replace('#', '');
         
         if (current === 'home') {
-          // 如果滑回首頁，清空網址 (但不觸發置頂，用 replaceState 默默清掉)
           if (currentHash) window.history.replaceState(null, '', window.location.pathname);
         } else {
-          // 如果第一次滑離首頁，推入紀錄；如果只是區塊間切換，替換紀錄
           if (!currentHash) {
              window.history.pushState(null, '', `#${current}`);
           } else if (['work', 'about', 'contact'].includes(currentHash)) {
@@ -221,11 +212,9 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [activeSection]);
 
-  // ==========================================
-  // 🖱️ 交互攔截器：零延遲強制更新狀態
-  // ==========================================
   const handleNavClick = (id: string) => {
     if (id === 'home') {
+      setActiveSection('home'); // 💡 點擊按鈕時立刻將狀態設為 HOME
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.history.replaceState(null, '', window.location.pathname);
     } else {
@@ -246,7 +235,6 @@ export default function App() {
       setSelectedCategory(id);
       window.history.pushState(null, '', `#${id}`);
     } else {
-      // 關閉時交給瀏覽器原生返回
       window.history.back();
     }
   };
@@ -269,7 +257,6 @@ export default function App() {
     }
   };
 
-  // 📱 原生手機版鎖定
   useEffect(() => {
     if (selectedCategory || selectedWork || enlargedImage) {
       document.body.classList.add('modal-open');
@@ -278,7 +265,6 @@ export default function App() {
     }
   }, [selectedCategory, selectedWork, enlargedImage]);
 
-  // ⌨️ ESC 防護
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && (selectedCategory || selectedWork || enlargedImage)) {
@@ -318,7 +304,6 @@ export default function App() {
         }
         .category-card:hover img { transform: translateZ(0) scale(1.08) !important; }
         
-        /* 📱 零跳動背景鎖定 */
         body.modal-open {
           overflow: hidden !important;
           touch-action: none !important;
