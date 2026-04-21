@@ -128,66 +128,128 @@ export default function App() {
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
   // ==========================================
-  // ✨ 升級版：三層深層網址監聽器 (Category -> Work -> Image)
+  // ✨ 終極升級：選單攔截 + 滑動幽靈狀態 + 完美返回置頂
   // ==========================================
   useEffect(() => {
+    // 1. 攔截導覽列點擊：不讓它產生多餘的歷史紀錄
+    const handleNavClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      if (anchor && anchor.getAttribute('href')?.startsWith('#')) {
+        const id = anchor.getAttribute('href')?.substring(1);
+        const pageSections = ['home', 'work', 'about', 'contact'];
+
+        if (id && pageSections.includes(id)) {
+          e.preventDefault(); // 阻擋預設的跳轉行為
+
+          if (id === 'home') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            history.pushState(null, '', window.location.pathname); // 洗掉網址
+          } else {
+            const el = document.getElementById(id);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth' });
+              // 如果本來在頂端，往下點選單時，幫歷史紀錄加一層 #view，讓上一頁有東西可以按
+              if (window.location.hash === '' || window.location.hash === '#home') {
+                history.pushState(null, '', '#view');
+              }
+            }
+          }
+        }
+      }
+    };
+    document.addEventListener('click', handleNavClick);
+
+    // 2. 監聽網址變化 (包含按上一頁)
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      const parts = hash.split('/'); // 將網址用斜線拆開：['identity', 'identity-0', '圖片網址']
-      
+      const parts = hash.split('/');
       const catId = parts[0];
-      const workId = parts[1];
-      const imgUrl = parts[2] ? decodeURIComponent(parts.slice(2).join('/')) : null;
 
-      const pageSections = ['home', 'work', 'about', 'contact'];
+      // #view 是我們用來代表「正在首頁往下看」的幽靈狀態
+      const pageSections = ['home', 'work', 'about', 'contact', 'view'];
 
       if (!catId || pageSections.includes(catId)) {
-        // 退回首頁或大區塊：清空所有彈窗
+        // 退回主畫面：清空所有作品彈窗
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
+
+        // 🎯 核心神邏輯：只要上一頁按到網址變空，就強制平滑捲動到最頂端！
+        if (catId === '' || catId === 'home') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       } else {
-        // 第一層：驗證並打開「分類 Modal」
+        // 打開作品的邏輯 (這段維持原樣不變)
         const isValidCategory = categories.some(c => c.id === catId);
         if (isValidCategory) {
           setSelectedCategory(catId);
-
-          // 第二層：驗證並打開「子頁作品」
+          const workId = parts[1];
           if (workId) {
             const categoryData = categories.find(c => c.id === catId);
             const work = categoryData?.works?.find(w => w.id === workId) || null;
             setSelectedWork(work);
-
-            // 第三層：驗證並打開「放大圖片」
-            if (imgUrl && work) {
-              setEnlargedImage(imgUrl);
-            } else {
-              setEnlargedImage(null); // 網址沒有圖片，就關閉放大視窗
-            }
+            const imgUrl = parts[2] ? decodeURIComponent(parts.slice(2).join('/')) : null;
+            setEnlargedImage(imgUrl ? imgUrl : null);
           } else {
-            setSelectedWork(null); // 網址沒有子頁 ID，就退回分類
+            setSelectedWork(null);
             setEnlargedImage(null);
           }
         } else {
-          // 如果亂輸入網址，就全部清空
           setSelectedCategory(null);
           setSelectedWork(null);
           setEnlargedImage(null);
         }
       }
     };
-
     window.addEventListener('hashchange', handleHashChange);
     handleHashChange(); 
-    return () => window.removeEventListener('hashchange', handleHashChange);
+
+    // 3. 監聽滑動：如果使用者不是點選單，而是自己往下捲，偷偷塞入 #view 幽靈狀態
+    let hasPushedScrollState = window.location.hash === '#view';
+    const handleScrollHistory = () => {
+      const currentHash = window.location.hash;
+      const isPastHero = window.scrollY > window.innerHeight * 0.5;
+
+      if (isPastHero && !hasPushedScrollState && (currentHash === '' || currentHash === '#home')) {
+        history.pushState(null, '', '#view');
+        hasPushedScrollState = true;
+      } else if (!isPastHero && hasPushedScrollState && currentHash === '#view') {
+        history.replaceState(null, '', window.location.pathname);
+        hasPushedScrollState = false;
+      }
+    };
+    window.addEventListener('scroll', handleScrollHistory);
+
+    return () => {
+      document.removeEventListener('click', handleNavClick);
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('scroll', handleScrollHistory);
+    };
   }, []);
+
+  // ==========================================
+  // ⌨️ 專業級 UX：鍵盤 ESC 一鍵關閉
+  // ==========================================
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (enlargedImage) handleSetEnlargedImage(null);
+        else if (selectedWork) handleSetSelectedWork(null);
+        else if (selectedCategory) handleSetSelectedCategory(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [enlargedImage, selectedWork, selectedCategory]);
 
   // 🖱️ 攔截器 1：設定分類
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) {
       window.location.hash = id; 
     } else {
-      history.pushState(null, '', window.location.pathname + '#work');
+      // 關閉時退回 #view 幽靈狀態，這樣再按一次上一頁才會回到頂部
+      history.pushState(null, '', window.location.pathname + '#view');
       setSelectedCategory(null); 
       setSelectedWork(null);
       setEnlargedImage(null);
@@ -199,7 +261,7 @@ export default function App() {
     if (work && selectedCategory) {
       window.location.hash = `${selectedCategory}/${work.id}`;
     } else if (selectedCategory) {
-      window.location.hash = selectedCategory; // 關閉子頁，退回上一層（分類）
+      window.location.hash = selectedCategory; 
     }
   };
 
@@ -208,10 +270,11 @@ export default function App() {
     if (img && selectedCategory && selectedWork) {
       window.location.hash = `${selectedCategory}/${selectedWork.id}/${encodeURIComponent(img)}`;
     } else if (selectedCategory && selectedWork) {
-      window.location.hash = `${selectedCategory}/${selectedWork.id}`; // 關閉圖片，退回上一層（子頁）
+      window.location.hash = `${selectedCategory}/${selectedWork.id}`; 
     }
   };
 
+  // 鎖定背景滾動
   useEffect(() => {
     if (selectedCategory || selectedWork || enlargedImage) {
       document.body.style.overflow = 'hidden';
@@ -220,6 +283,7 @@ export default function App() {
     }
   }, [selectedCategory, selectedWork, enlargedImage]);
 
+  // 滑鼠追蹤
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
@@ -229,6 +293,7 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
+  // 導覽列 Active 狀態偵測 (維持你原本的完美邏輯)
   useEffect(() => {
     const handleScroll = () => {
       const sections = ['home', 'work', 'about', 'contact'];
@@ -309,9 +374,9 @@ export default function App() {
         activeCategoryData={activeCategoryData}
         setSelectedCategory={handleSetSelectedCategory}
         selectedWork={selectedWork}
-        setSelectedWork={handleSetSelectedWork} // 傳入攔截器 2
+        setSelectedWork={handleSetSelectedWork} 
         enlargedImage={enlargedImage}
-        setEnlargedImage={handleSetEnlargedImage} // 傳入攔截器 3
+        setEnlargedImage={handleSetEnlargedImage} 
         setIsHovering={setIsHovering}
         isDarkMode={isDarkMode}
       />
