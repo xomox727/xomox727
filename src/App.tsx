@@ -67,35 +67,48 @@ import { Modals } from './components/Modals';
 
 type Work = { id: string; thumb: string; full: string; title?: string; type?: 'single' | 'gallery'; galleryImages?: string[]; contain?: boolean; imageClass?: string; };
 
+// ==========================================
+// 📦 資料重構：統一使用 gallery 邏輯來達成「點擊返回」
+// ==========================================
+const anotherWorks: Work[] = [
+  { id: 'another-0', thumb: another1Image, full: another1Image, type: 'gallery', galleryImages: [another1Image], title: '廣宣品' },
+  { id: 'another-1', thumb: another2Image, full: another2Image, type: 'gallery', galleryImages: [another2Image], title: '資訊圖資' },
+  { id: 'another-2', thumb: another3Image, full: another3Image, type: 'gallery', galleryImages: [another3Image], title: '刀模客製' },
+  { id: 'another-3', thumb: another4Image, full: another4Image, type: 'gallery', galleryImages: [another4Image], title: '亞馬遜電商Premium A+' },
+  { id: 'another-4', thumb: another5Image, full: another5Image, type: 'gallery', galleryImages: [another5Image], title: '蝦皮電商圖' },
+  { id: 'another-5', thumb: another6Image, full: another6Image, type: 'gallery', title: '社群通知貼圖', contain: true, galleryImages: [another6Pic1, another6Pic2, another6Pic3] }
+];
+
+const identityWorks: Work[] = [
+  { id: 'identity-0', thumb: identity1Image, full: identity1Image, title: '攝影展主視覺', type: 'gallery', contain: true, imageClass: 'object-left p-2', galleryImages: [identityGallery1, identityGallery2] },
+  { id: 'identity-1', thumb: identity2Image, full: identity2Image, title: '小黑手工饅頭', type: 'gallery', galleryImages: [identity2Pic1, identity2Pic2] },
+  { id: 'identity-2', thumb: identity3Image, full: identity3Image, title: '弘霖工程行', type: 'gallery', contain: true, imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40', galleryImages: [identity3Pic1, identity3Pic2, identity3Pic3] },
+  { id: 'identity-3', thumb: identity4Image, full: identity4Image, title: 'MYJ服飾', type: 'gallery', contain: true, galleryImages: [identity4Pic1, identity4Pic2, identity4Pic3] },
+  { id: 'identity-4', thumb: identity5Image, full: identity5Image, title: '台式馬卡龍', type: 'gallery', contain: true, galleryImages: [identity5Pic1, identity5Pic2] }
+];
+
+const layoutWorks: Work[] = [
+  { id: 'layout-0', thumb: layout1Image, full: layout1Image, title: '菜單', type: 'gallery', galleryImages: [layout1Pic1, layout1Pic2, layout1Pic3] },
+  { id: 'layout-1', thumb: layout2Image, full: layout2Image, title: '西螺老屋再造計畫手冊', type: 'gallery', galleryImages: [layoutGallery1, layoutGallery2] },
+  { id: 'layout-2', thumb: layout3Image, full: layout3Image, title: '吉福堂', type: 'gallery', contain: true, imageClass: 'p-10', galleryImages: [layout3Pic1, layout3Pic2] }
+];
+
+const packageWorks: Work[] = [
+  { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'gallery', galleryImages: [package1Image] },
+  { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'gallery', galleryImages: [package2Image] }
+];
+
+const illustrationWorks: Work[] = [
+  { id: 'illustration-0', thumb: illustration1Image, full: illustration1Image, title: '明信片設計', type: 'gallery', galleryImages: [illustration1Image] },
+  { id: 'illustration-1', thumb: illustration2Image, full: illustration2Image, title: '似顏繪明信片', type: 'gallery', galleryImages: [illustration2Image] }
+];
+
 const categories = [
-  { id: 'identity', title: 'IDENTITY', color: 'bg-neutral-300', image: identityImage, position: 'object-left', works: [
-    { id: 'identity-0', thumb: identity1Image, full: identity1Image, title: '攝影展主視覺', type: 'gallery', contain: true, imageClass: 'object-left p-2', galleryImages: [identityGallery1, identityGallery2] },
-    { id: 'identity-1', thumb: identity2Image, full: identity2Image, title: '小黑手工饅頭', type: 'gallery', galleryImages: [identity2Pic1, identity2Pic2] },
-    { id: 'identity-2', thumb: identity3Image, full: identity3Image, title: '弘霖工程行', type: 'gallery', contain: true, imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40', galleryImages: [identity3Pic1, identity3Pic2, identity3Pic3] },
-    { id: 'identity-3', thumb: identity4Image, full: identity4Image, title: 'MYJ服飾', type: 'gallery', contain: true, galleryImages: [identity4Pic1, identity4Pic2, identity4Pic3] },
-    { id: 'identity-4', thumb: identity5Image, full: identity5Image, title: '台式馬卡龍', type: 'gallery', contain: true, galleryImages: [identity5Pic1, identity5Pic2] }
-  ] },
-  { id: 'layout', title: 'LAYOUT', color: 'bg-neutral-100', image: layoutImage, customClass: 'scale-[1.8]', works: [
-    { id: 'layout-0', thumb: layout1Image, full: layout1Image, title: '菜單', type: 'gallery', galleryImages: [layout1Pic1, layout1Pic2, layout1Pic3] },
-    { id: 'layout-1', thumb: layout2Image, full: layout2Image, title: '西螺老屋再造計畫手冊', type: 'gallery', galleryImages: [layoutGallery1, layoutGallery2] },
-    { id: 'layout-2', thumb: layout3Image, full: layout3Image, title: '吉福堂', type: 'gallery', contain: true, imageClass: 'p-10', galleryImages: [layout3Pic1, layout3Pic2] }
-  ] },
-  { id: 'package', title: 'PACKAGE DESIGN', color: 'bg-neutral-400', image: packageImage, works: [
-    { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'single' },
-    { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'single' }
-  ] },
-  { id: 'illustration', title: 'ILLUSTRATION', color: 'bg-neutral-200', image: illustrationImage, works: [
-    { id: 'illustration-0', thumb: illustration1Image, full: illustration1Image, title: '明信片設計', type: 'single' },
-    { id: 'illustration-1', thumb: illustration2Image, full: illustration2Image, title: '似顏繪明信片', type: 'single' }
-  ] },
-  { id: 'another', title: 'ANOTHER', color: 'bg-neutral-500', image: another1Image, works: [
-    { id: 'another-0', thumb: another1Image, full: another1Image, type: 'single', title: '廣宣品' },
-    { id: 'another-1', thumb: another2Image, full: another2Image, type: 'single', title: '資訊圖資' },
-    { id: 'another-2', thumb: another3Image, full: another3Image, type: 'single', title: '刀模客製' },
-    { id: 'another-3', thumb: another4Image, full: another4Image, type: 'single', title: '亞馬遜電商Premium A+' },
-    { id: 'another-4', thumb: another5Image, full: another5Image, type: 'single', title: '蝦皮電商圖' },
-    { id: 'another-5', thumb: another6Image, full: another6Image, type: 'gallery', title: '社群通知貼圖', contain: true, galleryImages: [another6Pic1, another6Pic2, another6Pic3] }
-  ] },
+  { id: 'identity', title: 'IDENTITY', color: 'bg-neutral-300', image: identityImage, position: 'object-left', works: identityWorks },
+  { id: 'layout', title: 'LAYOUT', color: 'bg-neutral-100', image: layoutImage, customClass: 'scale-[1.8]', works: layoutWorks },
+  { id: 'package', title: 'PACKAGE DESIGN', color: 'bg-neutral-400', image: packageImage, works: packageWorks },
+  { id: 'illustration', title: 'ILLUSTRATION', color: 'bg-neutral-200', image: illustrationImage, works: illustrationWorks },
+  { id: 'another', title: 'ANOTHER', color: 'bg-neutral-500', image: another1Image, works: anotherWorks },
 ];
 
 export default function App() {
@@ -116,6 +129,9 @@ export default function App() {
 
   const isScrollingRef = useRef(false);
 
+  // ==========================================
+  // ✨ 狀態跟隨網址：準確切分「區塊」與「彈窗」
+  // ==========================================
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
@@ -125,13 +141,11 @@ export default function App() {
       const hash = window.location.hash.replace('#', '');
       const parts = hash.split('/');
       
-      // 狀態 A：網址清空，代表退回首頁頂部
       if (hash === '') {
-        setActiveSection('home'); // 💡 強制且立刻更新導覽列狀態為 HOME
+        setActiveSection('home');
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-        
         if (window.scrollY > 20) {
           isScrollingRef.current = true;
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -141,7 +155,7 @@ export default function App() {
       }
 
       if (['work', 'about', 'contact'].includes(hash)) {
-        setActiveSection(hash); // 💡 同步更新導覽列狀態
+        setActiveSection(hash);
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
@@ -176,6 +190,9 @@ export default function App() {
     };
   }, []);
 
+  // ==========================================
+  // ✨ 精確滾動同步
+  // ==========================================
   useEffect(() => {
     const handleScroll = () => {
       if (document.body.classList.contains('modal-open') || isScrollingRef.current) return;
@@ -192,9 +209,7 @@ export default function App() {
 
       if (current && current !== activeSection) {
         setActiveSection(current);
-
         const currentHash = window.location.hash.replace('#', '');
-        
         if (current === 'home') {
           if (currentHash) window.history.replaceState(null, '', window.location.pathname);
         } else {
@@ -212,9 +227,12 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [activeSection]);
 
+  // ==========================================
+  // 🖱️ 交互攔截器：零延遲強制更新狀態
+  // ==========================================
   const handleNavClick = (id: string) => {
     if (id === 'home') {
-      setActiveSection('home'); // 💡 點擊按鈕時立刻將狀態設為 HOME
+      setActiveSection('home');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.history.replaceState(null, '', window.location.pathname);
     } else {
