@@ -114,10 +114,11 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  const scrollRef = useRef(0);
+  // 💡 關鍵：捲動鎖定，防止置頂動畫期間重複觸發歷史紀錄
+  const isScrollingToTop = useRef(false);
 
   // ==========================================
-  // ✨ 核心：網頁版隨時返回置頂 & 手機版 Threads 層級
+  // ✨ 網頁版/平板：置頂與緩衝歷史邏輯
   // ==========================================
   useEffect(() => {
     const handleHashChange = () => {
@@ -125,21 +126,27 @@ export default function App() {
       const parts = hash.split('/');
       const catId = parts[0];
 
-      // 1. 如果 Hash 為空 -> 代表使用者按了「上一頁」回到最起點
-      if (!hash) {
+      // 1. 如果 Hash 變空（按上一頁回到起點）
+      if (!hash || hash === 'home') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-        // 強制平滑捲動回 Hero 頂部
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // 如果目前不在最頂端，執行平滑置頂
+        if (window.scrollY > 50) {
+          isScrollingToTop.current = true;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          // 動畫結束後釋放鎖定
+          setTimeout(() => { isScrollingToTop.current = false; }, 800);
+        }
       } 
-      // 2. 如果是正在瀏覽狀態 (#view)
+      // 2. 緩衝點狀態
       else if (hash === 'view') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
       } 
-      // 3. 進入彈窗層級
+      // 3. 作品詳細層級
       else {
         const currentCat = categories.find(c => c.id === catId);
         if (currentCat) {
@@ -157,18 +164,18 @@ export default function App() {
       }
     };
 
-    // 監聽手動捲動：只要離開頂部，就塞入 #view 讓「上一頁」有地方可以退
+    // 監聽手動捲動：只要離開頂部，就塞入唯一緩衝點
     const handleManualScroll = () => {
-      if (selectedCategory || selectedWork || enlargedImage) return;
+      if (isScrollingToTop.current || selectedCategory || selectedWork || enlargedImage) return;
 
-      const isPastHero = window.scrollY > 100;
+      const isPastHero = window.scrollY > 200;
       const currentHash = window.location.hash;
 
       if (isPastHero && !currentHash) {
-        // 第一次離開頂部，推入 #view
-        window.history.pushState({ view: true }, '', '#view');
+        // 離開頂部：推入緩衝點
+        window.history.pushState({ isView: true }, '', '#view');
       } else if (!isPastHero && currentHash === '#view') {
-        // 回到頂部，洗掉 #view
+        // 滑回頂部：徹底洗掉緩衝紀錄
         window.history.replaceState(null, '', window.location.pathname);
       }
     };
@@ -184,65 +191,53 @@ export default function App() {
   }, [selectedCategory, selectedWork, enlargedImage]);
 
   // ==========================================
-  // ✨ 背景凍結 (防止手機版背景跑位)
+  // 🖱️ 導覽列：使用 replaceState 防止歷史紀錄堆疊
   // ==========================================
-  useEffect(() => {
-    const body = document.body;
-    if (selectedCategory || selectedWork || enlargedImage) {
-      if (body.style.position !== 'fixed') {
-        scrollRef.current = window.scrollY;
-        body.style.position = 'fixed';
-        body.style.top = `-${scrollRef.current}px`;
-        body.style.width = '100%';
-        body.style.overflowY = 'scroll';
-      }
-    } else {
-      if (body.style.position === 'fixed') {
-        body.style.position = '';
-        body.style.top = '';
-        body.style.width = '';
-        body.style.overflowY = '';
-        window.scrollTo(0, scrollRef.current);
-      }
-    }
-  }, [selectedCategory, selectedWork, enlargedImage]);
-
-  // 🖱️ 導覽列點擊處理：使用 replaceState 避免鬼打牆紀錄
   const handleNavClick = (id: string) => {
     if (id === 'home') {
+      isScrollingToTop.current = true;
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.history.replaceState(null, '', window.location.pathname);
+      setTimeout(() => { isScrollingToTop.current = false; }, 800);
       setSelectedCategory(null);
     } else {
       const el = document.getElementById(id);
       if (el) {
+        // 確保網址列有 #view 但不增加歷史深度
+        window.history.replaceState(null, '', '#view');
         el.scrollIntoView({ behavior: 'smooth' });
-        // 確保網址至少有一次 #view 紀錄，讓「返回」能置頂
-        if (window.location.hash !== '#view') {
-          window.history.pushState({ view: true }, '', '#view');
-        }
       }
     }
   };
 
-  // 🖱️ 彈窗交互攔截 (維持層級)
+  // 🖱️ 交互攔截
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) window.location.hash = id;
-    else window.history.back(); // 退回上一層 (#view)
+    else window.history.back(); // 往回退到 #view 或 空
   };
 
   const handleSetSelectedWork = (work: Work | null) => {
     if (work && selectedCategory) window.location.hash = `${selectedCategory}/${work.id}`;
-    else window.history.back(); // 退回上一層 (分類)
+    else window.history.back();
   };
 
   const handleSetEnlargedImage = (img: string | null) => {
     if (img && selectedCategory && selectedWork) {
       window.location.hash = `${selectedCategory}/${selectedWork.id}/${encodeURIComponent(img)}`;
-    } else window.history.back(); // 退回上一層 (子作品)
+    } else window.history.back();
   };
 
-  // ⌨️ ESC 鍵關閉
+  // ==========================================
+  // ⌨️ 基本設定 (移除手機版複雜鎖定)
+  // ==========================================
+  useEffect(() => {
+    if (selectedCategory || selectedWork || enlargedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [selectedCategory, selectedWork, enlargedImage]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && (selectedCategory || selectedWork || enlargedImage)) {
@@ -264,7 +259,7 @@ export default function App() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (selectedCategory || selectedWork || enlargedImage) return;
+      if (isScrollingToTop.current) return;
       const sections = ['home', 'work', 'about', 'contact'];
       const current = sections.find(section => {
         const el = document.getElementById(section);
@@ -279,7 +274,7 @@ export default function App() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [selectedCategory, selectedWork, enlargedImage]);
+  }, []);
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.add('dark');
