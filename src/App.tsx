@@ -124,8 +124,10 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
+  // ==========================================
+  // ✨ 原生 APP 級別：導覽列與網址連動
+  // ==========================================
   useEffect(() => {
-    // 1. 攔截導覽列點擊
     const handleNavClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
@@ -137,12 +139,7 @@ export default function App() {
           e.preventDefault(); 
           if (id === 'home') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // 💡 關鍵修正：當點擊 Home 回到頂部時，用 replaceState 洗掉網址紀錄
-            // 這樣在首頁按「上一頁」，就會直接離開網站，而不會鬼打牆退回中間
             history.replaceState(null, '', window.location.pathname);
-            
-            // 同時確保所有彈窗關閉
             setSelectedCategory(null);
             setSelectedWork(null);
             setEnlargedImage(null);
@@ -159,7 +156,6 @@ export default function App() {
     };
     document.addEventListener('click', handleNavClick);
 
-    // 2. 隨時隨地監聽滑動
     const handleScrollHistory = () => {
       const currentHash = window.location.hash;
       const isPastHero = window.scrollY > window.innerHeight * 0.2; 
@@ -167,14 +163,12 @@ export default function App() {
       if (isPastHero && (currentHash === '' || currentHash === '#home')) {
         history.pushState(null, '', '#view');
       } 
-      // 💡 關鍵修正：手動往上滑回頂部時，也要洗掉紀錄
       else if (!isPastHero && currentHash === '#view') {
         history.replaceState(null, '', window.location.pathname);
       }
     };
     window.addEventListener('scroll', handleScrollHistory);
 
-    // 3. 處理「上一頁」或網址變化
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       const parts = hash.split('/');
@@ -218,6 +212,41 @@ export default function App() {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
+
+  // ==========================================
+  // ✨ 原生 APP 級別：手機端背景凍結黑科技
+  // ==========================================
+  useEffect(() => {
+    const body = document.body;
+    
+    // 如果有任何彈出視窗打開
+    if (selectedCategory || selectedWork || enlargedImage) {
+      // 確保只鎖定一次，避免紀錄到錯誤的位置
+      if (body.dataset.locked !== 'true') {
+        const scrollY = window.scrollY; // 記住使用者現在滑到哪裡
+        
+        body.style.position = 'fixed';
+        body.style.top = `-${scrollY}px`; // 把畫面釘死在這個位置
+        body.style.width = '100%';
+        body.dataset.locked = 'true';
+        body.dataset.scrollY = scrollY.toString(); // 把數值存起來
+      }
+    } else {
+      // 關閉所有視窗時，解除鎖定並瞬間回到原本的位置
+      if (body.dataset.locked === 'true') {
+        const scrollY = body.dataset.scrollY || '0';
+        
+        body.style.position = '';
+        body.style.top = '';
+        body.style.width = '';
+        body.dataset.locked = 'false';
+        
+        // 瞬間跳回原本的位置 (不能用 smooth，必須瞬間，這才是原生 APP 的感覺)
+        window.scrollTo(0, parseInt(scrollY));
+      }
+    }
+  }, [selectedCategory, selectedWork, enlargedImage]);
+
 
   // 🖱️ 攔截器 1：設定分類
   const handleSetSelectedCategory = (id: string | null) => {
@@ -263,14 +292,6 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [enlargedImage, selectedWork, selectedCategory]);
-
-  useEffect(() => {
-    if (selectedCategory || selectedWork || enlargedImage) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [selectedCategory, selectedWork, enlargedImage]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
