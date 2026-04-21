@@ -127,17 +127,52 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
+  // ==========================================
+  // ✨ 升級版：三層深層網址監聽器 (Category -> Work -> Image)
+  // ==========================================
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      const pageSections = ['home', 'work', 'about', 'contact'];
+      const parts = hash.split('/'); // 將網址用斜線拆開：['identity', 'identity-0', '圖片網址']
       
-      if (!hash || pageSections.includes(hash)) {
+      const catId = parts[0];
+      const workId = parts[1];
+      const imgUrl = parts[2] ? decodeURIComponent(parts.slice(2).join('/')) : null;
+
+      const pageSections = ['home', 'work', 'about', 'contact'];
+
+      if (!catId || pageSections.includes(catId)) {
+        // 退回首頁或大區塊：清空所有彈窗
         setSelectedCategory(null);
+        setSelectedWork(null);
+        setEnlargedImage(null);
       } else {
-        const isValidCategory = categories.some(c => c.id === hash);
+        // 第一層：驗證並打開「分類 Modal」
+        const isValidCategory = categories.some(c => c.id === catId);
         if (isValidCategory) {
-          setSelectedCategory(hash);
+          setSelectedCategory(catId);
+
+          // 第二層：驗證並打開「子頁作品」
+          if (workId) {
+            const categoryData = categories.find(c => c.id === catId);
+            const work = categoryData?.works?.find(w => w.id === workId) || null;
+            setSelectedWork(work);
+
+            // 第三層：驗證並打開「放大圖片」
+            if (imgUrl && work) {
+              setEnlargedImage(imgUrl);
+            } else {
+              setEnlargedImage(null); // 網址沒有圖片，就關閉放大視窗
+            }
+          } else {
+            setSelectedWork(null); // 網址沒有子頁 ID，就退回分類
+            setEnlargedImage(null);
+          }
+        } else {
+          // 如果亂輸入網址，就全部清空
+          setSelectedCategory(null);
+          setSelectedWork(null);
+          setEnlargedImage(null);
         }
       }
     };
@@ -147,12 +182,33 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // 🖱️ 攔截器 1：設定分類
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) {
       window.location.hash = id; 
     } else {
       history.pushState(null, '', window.location.pathname + '#work');
       setSelectedCategory(null); 
+      setSelectedWork(null);
+      setEnlargedImage(null);
+    }
+  };
+
+  // 🖱️ 攔截器 2：設定子頁作品
+  const handleSetSelectedWork = (work: Work | null) => {
+    if (work && selectedCategory) {
+      window.location.hash = `${selectedCategory}/${work.id}`;
+    } else if (selectedCategory) {
+      window.location.hash = selectedCategory; // 關閉子頁，退回上一層（分類）
+    }
+  };
+
+  // 🖱️ 攔截器 3：設定放大圖片
+  const handleSetEnlargedImage = (img: string | null) => {
+    if (img && selectedCategory && selectedWork) {
+      window.location.hash = `${selectedCategory}/${selectedWork.id}/${encodeURIComponent(img)}`;
+    } else if (selectedCategory && selectedWork) {
+      window.location.hash = `${selectedCategory}/${selectedWork.id}`; // 關閉圖片，退回上一層（子頁）
     }
   };
 
@@ -253,9 +309,9 @@ export default function App() {
         activeCategoryData={activeCategoryData}
         setSelectedCategory={handleSetSelectedCategory}
         selectedWork={selectedWork}
-        setSelectedWork={setSelectedWork}
+        setSelectedWork={handleSetSelectedWork} // 傳入攔截器 2
         enlargedImage={enlargedImage}
-        setEnlargedImage={setEnlargedImage}
+        setEnlargedImage={handleSetEnlargedImage} // 傳入攔截器 3
         setIsHovering={setIsHovering}
         isDarkMode={isDarkMode}
       />
