@@ -147,17 +147,25 @@ export default function App() {
     return () => document.removeEventListener('click', handleNavClick);
   }, []);
 
-  // 2. 只有彈窗會觸發的 Hash Routing 監聽器
+  // 2. Hash Routing 監聽器 (修復退回頂部的邏輯)
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       
-      // 按上一頁導致網址空掉，就直接關閉所有作品
-      if (!hash || ['home', 'work', 'about', 'contact'].includes(hash)) {
+      // 💡 關鍵修復：如果按上一頁導致網址空掉，或回到 home，確保畫面平滑捲回最頂部
+      if (!hash || hash === 'home') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // 加回這行！
+      } 
+      // 💡 如果是在其他區塊或幽靈狀態，只關閉彈窗，不動捲軸
+      else if (['view', 'work', 'about', 'contact'].includes(hash)) {
+        setSelectedCategory(null);
+        setSelectedWork(null);
+        setEnlargedImage(null);
+      } 
+      else {
         const parts = hash.split('/');
         const catId = parts[0];
         const workId = parts[1];
