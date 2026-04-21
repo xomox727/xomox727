@@ -127,19 +127,14 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  // ==========================================
-  // ✨ 新增：Hash Routing 網址監聽邏輯
-  // ==========================================
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       const pageSections = ['home', 'work', 'about', 'contact'];
       
-      // 如果網址沒有 Hash，或是 Hash 屬於大區塊（不是作品 ID）
       if (!hash || pageSections.includes(hash)) {
         setSelectedCategory(null);
       } else {
-        // 如果 Hash 剛好是作品分類的 ID，就打開對應的彈窗
         const isValidCategory = categories.some(c => c.id === hash);
         if (isValidCategory) {
           setSelectedCategory(hash);
@@ -148,18 +143,16 @@ export default function App() {
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // 初始載入檢查
+    handleHashChange(); 
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // ✨ 新增：攔截打開/關閉動作，改為修改網址
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) {
-      window.location.hash = id; // 打開作品：修改網址，觸發上方 useEffect
+      window.location.hash = id; 
     } else {
-      // 關閉作品：使用 pushState 悄悄改網址為 #work，避免畫面突然跳轉
       history.pushState(null, '', window.location.pathname + '#work');
-      setSelectedCategory(null); // 手動清空狀態以關閉彈窗
+      setSelectedCategory(null); 
     }
   };
 
@@ -210,7 +203,6 @@ export default function App() {
   return (
     <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500 overflow-x-hidden">
       
-      {/* 🛠️ 終極防抖 CSS：改用 GPU 直接渲染 */}
       <style dangerouslySetInnerHTML={{ __html: `
         .category-card img, .work-card img {
           transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -230,7 +222,6 @@ export default function App() {
 
       <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]" style={{ scaleX }} />
       
-      {/* ✨ 雙層滑鼠球 */}
       <motion.div
         className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100]"
         style={{ x: mouseXSpring, y: mouseYSpring, translateX: '-50%', translateY: '-50%' }}
@@ -250,7 +241,6 @@ export default function App() {
       <main className="flex-1 w-full">
         <HomeHero isDarkMode={isDarkMode} heroMobileImage={heroMobileImage} heroSvg={heroSvg} heroMobileDarkImage={heroMobileDarkImage} heroDarkSvg={heroDarkSvg} />
         
-        {/* ✨ 修改：將 handleSetSelectedCategory 傳遞下去 */}
         <WorkSection categories={categories} setSelectedCategory={handleSetSelectedCategory} setIsHovering={setIsHovering} />
         
         <AboutSection />
@@ -261,7 +251,6 @@ export default function App() {
 
       <Modals 
         activeCategoryData={activeCategoryData}
-        {/* ✨ 修改：將 handleSetSelectedCategory 傳遞下去 */}
         setSelectedCategory={handleSetSelectedCategory}
         selectedWork={selectedWork}
         setSelectedWork={setSelectedWork}
