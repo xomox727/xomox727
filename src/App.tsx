@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (100% 留存)
+// 🚀 圖片路徑配置 (保證 100% 留存，一字未改)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -114,83 +114,115 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
+  const isScrollingRef = useRef(false);
+
   // ==========================================
-  // ✨ 效能優化：零延遲 IntersectionObserver 偵測頂部
+  // ✨ 狀態跟隨網址：準確切分「區塊」與「彈窗」
   // ==========================================
   useEffect(() => {
-    // 禁止瀏覽器自動亂跳
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
 
-    const observer = new IntersectionObserver((entries) => {
-      // 防止在彈窗開啟時寫入紀錄
-      if (document.body.classList.contains('modal-open')) return;
-
-      const isAtTop = entries[0].isIntersecting;
-      const currentHash = window.location.hash.replace('#', '');
-
-      if (!isAtTop && !currentHash) {
-        // 滑離頂部：推進一顆 #view 緩衝點
-        window.history.pushState(null, '', '#view');
-      } else if (isAtTop && currentHash === 'view') {
-        // 回到頂部：洗掉紀錄，防止鬼打牆
-        window.history.replaceState(null, '', window.location.pathname);
+    const syncStateWithHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      const parts = hash.split('/');
+      
+      // 狀態 A：網址清空，代表退回首頁頂部
+      if (hash === '') {
+        setSelectedCategory(null);
+        setSelectedWork(null);
+        setEnlargedImage(null);
+        
+        if (window.scrollY > 20) {
+          isScrollingRef.current = true;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => { isScrollingRef.current = false; }, 800);
+        }
+        return;
       }
-    }, { threshold: 0 });
 
-    const topSentinel = document.getElementById('top-sentinel');
-    if (topSentinel) observer.observe(topSentinel);
+      // 狀態 B：只是滑動到其他區塊 (work, about, contact)
+      if (['work', 'about', 'contact'].includes(hash)) {
+        setSelectedCategory(null);
+        setSelectedWork(null);
+        setEnlargedImage(null);
+        return;
+      }
 
-    return () => observer.disconnect();
+      // 狀態 C：彈窗層級 (分類 > 子作品 > 放大圖)
+      const catId = parts[0];
+      const workId = parts[1];
+      const imgUrl = parts[2];
+
+      const currentCat = categories.find(c => c.id === catId);
+      if (currentCat) {
+        setSelectedCategory(catId);
+        if (workId) {
+          const currentWork = currentCat.works?.find(w => w.id === workId);
+          setSelectedWork(currentWork || null);
+          setEnlargedImage(imgUrl ? decodeURIComponent(imgUrl) : null);
+        } else {
+          setSelectedWork(null);
+          setEnlargedImage(null);
+        }
+      }
+    };
+
+    window.addEventListener('popstate', syncStateWithHash);
+    window.addEventListener('hashchange', syncStateWithHash);
+    syncStateWithHash(); 
+
+    return () => {
+      window.removeEventListener('popstate', syncStateWithHash);
+      window.removeEventListener('hashchange', syncStateWithHash);
+    };
   }, []);
 
   // ==========================================
-  // ✨ 處理瀏覽器「上一頁/下一頁」行為
+  // ✨ 精確滾動同步：滑到哪，網址就變成哪一區
   // ==========================================
   useEffect(() => {
-    const handlePopState = () => {
-      const hash = window.location.hash.replace('#', '');
-      const parts = hash.split('/');
-      const catId = parts[0];
+    const handleScroll = () => {
+      if (document.body.classList.contains('modal-open') || isScrollingRef.current) return;
 
-      if (!hash || hash === 'home') {
-        setSelectedCategory(null);
-        setSelectedWork(null);
-        setEnlargedImage(null);
-        if (window.scrollY > 20) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+      const sections = ['home', 'work', 'about', 'contact'];
+      const current = sections.find(section => {
+        const el = document.getElementById(section);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          // 用畫面中間的基準點來判斷現在看到哪一區
+          return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
         }
-      } else if (hash === 'view') {
-        setSelectedCategory(null);
-        setSelectedWork(null);
-        setEnlargedImage(null);
-      } else {
-        const currentCat = categories.find(c => c.id === catId);
-        if (currentCat) {
-          setSelectedCategory(catId);
-          if (parts[1]) {
-            const currentWork = currentCat.works?.find(w => w.id === parts[1]);
-            setSelectedWork(currentWork || null);
-            setEnlargedImage(parts[2] ? decodeURIComponent(parts.slice(2).join('/')) : null);
-          } else {
-            setSelectedWork(null);
-            setEnlargedImage(null);
+        return false;
+      });
+
+      if (current && current !== activeSection) {
+        setActiveSection(current);
+
+        const currentHash = window.location.hash.replace('#', '');
+        
+        if (current === 'home') {
+          // 如果滑回首頁，清空網址 (但不觸發置頂，用 replaceState 默默清掉)
+          if (currentHash) window.history.replaceState(null, '', window.location.pathname);
+        } else {
+          // 如果第一次滑離首頁，推入紀錄；如果只是區塊間切換，替換紀錄
+          if (!currentHash) {
+             window.history.pushState(null, '', `#${current}`);
+          } else if (['work', 'about', 'contact'].includes(currentHash)) {
+             window.history.replaceState(null, '', `#${current}`);
           }
         }
       }
+      setShowBackToTop(window.scrollY > 800);
     };
 
-    window.addEventListener('popstate', handlePopState);
-    window.addEventListener('hashchange', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('hashchange', handlePopState);
-    };
-  }, []);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeSection]);
 
   // ==========================================
-  // ⚡ 零延遲（0ms）光速點擊攔截器：狀態先行，網址在後
+  // 🖱️ 交互攔截器：零延遲強制更新狀態
   // ==========================================
   const handleNavClick = (id: string) => {
     if (id === 'home') {
@@ -199,7 +231,11 @@ export default function App() {
     } else {
       const el = document.getElementById(id);
       if (el) {
-        window.history.replaceState(null, '', '#view');
+        if (!window.location.hash) {
+          window.history.pushState(null, '', `#${id}`);
+        } else if (['work', 'about', 'contact'].includes(window.location.hash.replace('#', ''))) {
+          window.history.replaceState(null, '', `#${id}`);
+        }
         el.scrollIntoView({ behavior: 'smooth' });
       }
     }
@@ -207,15 +243,131 @@ export default function App() {
 
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) {
-      setSelectedCategory(id); // 0ms 立刻切換 UI
-      window.history.pushState(null, '', `#${id}`); // 背景更新網址
+      setSelectedCategory(id);
+      window.history.pushState(null, '', `#${id}`);
     } else {
-      setSelectedCategory(null); // 0ms 立刻關閉
-      window.history.replaceState(null, '', window.location.pathname + (window.scrollY > 100 ? '#view' : ''));
+      // 關閉時交給瀏覽器原生返回
+      window.history.back();
     }
   };
 
   const handleSetSelectedWork = (work: Work | null) => {
     if (work && selectedCategory) {
       setSelectedWork(work);
-      window.history.push
+      window.history.pushState(null, '', `#${selectedCategory}/${work.id}`);
+    } else {
+      window.history.back();
+    }
+  };
+
+  const handleSetEnlargedImage = (img: string | null) => {
+    if (img && selectedCategory && selectedWork) {
+      setEnlargedImage(img);
+      window.history.pushState(null, '', `#${selectedCategory}/${selectedWork.id}/${encodeURIComponent(img)}`);
+    } else {
+      window.history.back();
+    }
+  };
+
+  // 📱 原生手機版鎖定
+  useEffect(() => {
+    if (selectedCategory || selectedWork || enlargedImage) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+  }, [selectedCategory, selectedWork, enlargedImage]);
+
+  // ⌨️ ESC 防護
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && (selectedCategory || selectedWork || enlargedImage)) {
+        window.history.back();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCategory, selectedWork, enlargedImage]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  useEffect(() => {
+    if (isDarkMode) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, [isDarkMode]);
+
+  const activeCategoryData = categories.find(c => c.id === selectedCategory);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+
+  return (
+    <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500 overflow-x-hidden relative">
+      <style dangerouslySetInnerHTML={{ __html: `
+        .category-card img, .work-card img {
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          will-change: transform;
+          backface-visibility: hidden;
+          transform: translateZ(0) scale(1);
+        }
+        .category-card:hover img { transform: translateZ(0) scale(1.08) !important; }
+        
+        /* 📱 零跳動背景鎖定 */
+        body.modal-open {
+          overflow: hidden !important;
+          touch-action: none !important;
+        }
+      `}} />
+
+      <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]" style={{ scaleX }} />
+      
+      <motion.div
+        className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100]"
+        style={{ x: mouseXSpring, y: mouseYSpring, translateX: '-50%', translateY: '-50%' }}
+        animate={{
+          backgroundColor: isHovering ? '#ffd9f9' : '#2e406f',
+          scale: isHovering ? 1.5 : 1,
+          opacity: isHovering ? 0.6 : 1,
+        }}
+      />
+      <motion.div
+        className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white"
+        style={{ x: dotXSpring, y: dotYSpring, translateX: '-50%', translateY: '-50%' }}
+      />
+
+      <Navigation 
+        activeSection={activeSection} 
+        isDarkMode={isDarkMode} 
+        setIsDarkMode={setIsDarkMode} 
+        setIsHovering={setIsHovering}
+        onNavClick={handleNavClick} 
+      />
+
+      <main className="flex-1 w-full">
+        <HomeHero isDarkMode={isDarkMode} heroMobileImage={heroMobileImage} heroSvg={heroSvg} heroMobileDarkImage={heroMobileDarkImage} heroDarkSvg={heroDarkSvg} />
+        <WorkSection categories={categories} setSelectedCategory={handleSetSelectedCategory} setIsHovering={setIsHovering} />
+        <AboutSection />
+        <ContactSection setIsHovering={setIsHovering} />
+      </main>
+
+      <Footer />
+
+      <Modals 
+        activeCategoryData={activeCategoryData}
+        setSelectedCategory={handleSetSelectedCategory}
+        selectedWork={selectedWork}
+        setSelectedWork={handleSetSelectedWork} 
+        enlargedImage={enlargedImage}
+        setEnlargedImage={handleSetEnlargedImage} 
+        setIsHovering={setIsHovering}
+        isDarkMode={isDarkMode}
+      />
+    </div>
+  );
+}
