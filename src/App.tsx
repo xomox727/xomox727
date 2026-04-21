@@ -4,7 +4,7 @@
  */
 
 import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'motion/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
 // 🚀 圖片路徑配置 (對齊 GitHub Pages)
@@ -67,6 +67,9 @@ import { Modals } from './components/Modals';
 
 type Work = { id: string; thumb: string; full: string; title?: string; type?: 'single' | 'gallery'; galleryImages?: string[]; contain?: boolean; imageClass?: string; };
 
+// ==========================================
+// 📦 作品資料陣列
+// ==========================================
 const anotherWorks: Work[] = [
   { id: 'another-0', thumb: another1Image, full: another1Image, type: 'single', title: '廣宣品' },
   { id: 'another-1', thumb: another2Image, full: another2Image, type: 'single', title: '資訊圖資' },
@@ -124,139 +127,149 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  // 1. 攔截導覽列點擊：只滾動，不留任何歷史紀錄
-  useEffect(() => {
-    const handleNavClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const anchor = target.closest('a');
-      if (anchor && anchor.getAttribute('href')?.startsWith('#')) {
-        const id = anchor.getAttribute('href')?.substring(1);
-        const pageSections = ['home', 'work', 'about', 'contact'];
+  // 💡 用來鎖定自動捲動的旗標
+  const isAutoScrolling = useRef(false);
 
-        if (id && pageSections.includes(id)) {
-          e.preventDefault(); 
-          if (id === 'home') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else {
-            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-          }
-        }
-      }
-    };
-    document.addEventListener('click', handleNavClick);
-    return () => document.removeEventListener('click', handleNavClick);
-  }, []);
-
-  // 2. Hash Routing 監聽器 (修復退回頂部的邏輯)
+  // ==========================================
+  // ✨ 核心：全平台統一的導航與返回邏輯
+  // ==========================================
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      
-      // 💡 關鍵修復：如果按上一頁導致網址空掉，或回到 home，確保畫面平滑捲回最頂部
+      const parts = hash.split('/');
+      const catId = parts[0];
+
+      // 情況 A：回首頁 (空值或 home)
       if (!hash || hash === 'home') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // 加回這行！
+        
+        // 只有在真的有滑動時，才執行平滑置頂
+        if (window.scrollY > 10) {
+          isAutoScrolling.current = true;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => { isAutoScrolling.current = false; }, 800);
+        }
       } 
-      // 💡 如果是在其他區塊或幽靈狀態，只關閉彈窗，不動捲軸
-      else if (['view', 'work', 'about', 'contact'].includes(hash)) {
+      // 情況 B：進入滑動檢視狀態 (view)
+      else if (hash === 'view') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
       } 
+      // 情況 C：進入作品層級
       else {
-        const parts = hash.split('/');
-        const catId = parts[0];
-        const workId = parts[1];
-        const imgUrl = parts[2] ? decodeURIComponent(parts.slice(2).join('/')) : null;
-
         const isValidCategory = categories.some(c => c.id === catId);
         if (isValidCategory) {
           setSelectedCategory(catId);
+          const workId = parts[1];
           if (workId) {
             const categoryData = categories.find(c => c.id === catId);
             const work = categoryData?.works?.find(w => w.id === workId) || null;
             setSelectedWork(work);
-            setEnlargedImage(imgUrl);
+            setEnlargedImage(parts[2] ? decodeURIComponent(parts.slice(2).join('/')) : null);
           } else {
             setSelectedWork(null);
             setEnlargedImage(null);
           }
-        } else {
-          setSelectedCategory(null);
-          setSelectedWork(null);
-          setEnlargedImage(null);
         }
       }
     };
+
+    // 監聽手動捲動，自動管理 #view 歷史紀錄（洗掉鬼打牆紀錄）
+    const handleScrollHistory = () => {
+      if (isAutoScrolling.current) return;
+      const isPastHero = window.scrollY > 100;
+      const currentHash = window.location.hash;
+
+      if (isPastHero && (currentHash === '' || currentHash === '#home')) {
+        // 使用 pushState 建立一層返回點
+        window.history.pushState(null, '', '#view');
+      } else if (!isPastHero && currentHash === '#view') {
+        // 滑回頂部，用 replaceState 徹底洗掉 view 歷史，解決鬼打牆
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    };
+
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); 
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('scroll', handleScrollHistory);
+    handleHashChange(); // 初始檢查
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('scroll', handleScrollHistory);
+    };
   }, []);
 
-  // 3. 原生級別：手機端背景絕對鎖定 (Body Scroll Lock)
+  // ==========================================
+  // ✨ 核心：手機端/電腦端 凍結背景 (Facebook App 邏輯)
+  // ==========================================
   useEffect(() => {
+    const body = document.body;
     if (selectedCategory || selectedWork || enlargedImage) {
       const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflowY = 'scroll'; 
+      body.style.position = 'fixed';
+      body.style.top = `-${scrollY}px`;
+      body.style.width = '100%';
+      body.style.overflowY = 'scroll'; // 保持滾動條預留位置防止抖動
+      body.dataset.saveScrollY = scrollY.toString();
     } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflowY = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      const savedY = body.dataset.saveScrollY;
+      body.style.position = '';
+      body.style.top = '';
+      body.style.width = '';
+      body.style.overflowY = '';
+      if (savedY) {
+        window.scrollTo(0, parseInt(savedY));
+        delete body.dataset.saveScrollY;
       }
     }
   }, [selectedCategory, selectedWork, enlargedImage]);
 
-  // 🖱️ 攔截器 1：設定分類
-  const handleSetSelectedCategory = (id: string | null) => {
-    if (id) {
-      window.location.hash = id; 
+  // 🖱️ 選單點擊處理 (攔截預設跳轉)
+  const handleNavClick = (id: string) => {
+    if (id === 'home') {
+      window.location.hash = '';
     } else {
-      window.history.replaceState(null, '', window.location.pathname);
-      setSelectedCategory(null); 
-      setSelectedWork(null);
-      setEnlargedImage(null);
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        // 確保網址變成 #view，讓「上一頁」有地方可以退回 home
+        if (window.location.hash !== '#view') {
+          window.history.pushState(null, '', '#view');
+        }
+      }
     }
   };
 
-  // 🖱️ 攔截器 2：設定子頁作品
+  // 🖱️ 彈窗開啟/關閉攔截器
+  const handleSetSelectedCategory = (id: string | null) => {
+    if (id) window.location.hash = id;
+    else window.history.back();
+  };
+
   const handleSetSelectedWork = (work: Work | null) => {
-    if (work && selectedCategory) {
-      window.location.hash = `${selectedCategory}/${work.id}`;
-    } else if (selectedCategory) {
-      window.location.hash = selectedCategory; 
-    }
+    if (work && selectedCategory) window.location.hash = `${selectedCategory}/${work.id}`;
+    else window.history.back();
   };
 
-  // 🖱️ 攔截器 3：設定放大圖片
   const handleSetEnlargedImage = (img: string | null) => {
     if (img && selectedCategory && selectedWork) {
       window.location.hash = `${selectedCategory}/${selectedWork.id}/${encodeURIComponent(img)}`;
-    } else if (selectedCategory && selectedWork) {
-      window.location.hash = `${selectedCategory}/${selectedWork.id}`; 
-    }
+    } else window.history.back();
   };
 
-  // ⌨️ 鍵盤 ESC 一鍵關閉
+  // ⌨️ ESC 鍵關閉
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (enlargedImage) handleSetEnlargedImage(null);
-        else if (selectedWork) handleSetSelectedWork(null);
-        else if (selectedCategory) handleSetSelectedCategory(null);
+      if (e.key === 'Escape' && (selectedCategory || selectedWork || enlargedImage)) {
+        window.history.back();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [enlargedImage, selectedWork, selectedCategory]);
+  }, [selectedCategory, selectedWork, enlargedImage]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -296,22 +309,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500 overflow-x-hidden">
-      
       <style dangerouslySetInnerHTML={{ __html: `
         .category-card img, .work-card img {
           transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
           will-change: transform;
           backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
           transform: translateZ(0) scale(1);
         }
-        .category-card:hover img {
-          transform: translateZ(0) scale(1.08) !important;
-        }
-        .category-card {
-          isolation: isolate;
-          overflow: hidden;
-        }
+        .category-card:hover img { transform: translateZ(0) scale(1.08) !important; }
       `}} />
 
       <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]" style={{ scaleX }} />
@@ -330,13 +335,17 @@ export default function App() {
         style={{ x: dotXSpring, y: dotYSpring, translateX: '-50%', translateY: '-50%' }}
       />
 
-      <Navigation activeSection={activeSection} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsHovering={setIsHovering} />
+      <Navigation 
+        activeSection={activeSection} 
+        isDarkMode={isDarkMode} 
+        setIsDarkMode={setIsDarkMode} 
+        setIsHovering={setIsHovering}
+        onNavClick={handleNavClick} 
+      />
 
       <main className="flex-1 w-full">
         <HomeHero isDarkMode={isDarkMode} heroMobileImage={heroMobileImage} heroSvg={heroSvg} heroMobileDarkImage={heroMobileDarkImage} heroDarkSvg={heroDarkSvg} />
-        
         <WorkSection categories={categories} setSelectedCategory={handleSetSelectedCategory} setIsHovering={setIsHovering} />
-        
         <AboutSection />
         <ContactSection setIsHovering={setIsHovering} />
       </main>
