@@ -67,9 +67,6 @@ import { Modals } from './components/Modals';
 
 type Work = { id: string; thumb: string; full: string; title?: string; type?: 'single' | 'gallery'; galleryImages?: string[]; contain?: boolean; imageClass?: string; };
 
-// ==========================================
-// 📦 作品資料陣列
-// ==========================================
 const anotherWorks: Work[] = [
   { id: 'another-0', thumb: another1Image, full: another1Image, type: 'single', title: '廣宣品' },
   { id: 'another-1', thumb: another2Image, full: another2Image, type: 'single', title: '資訊圖資' },
@@ -127,11 +124,8 @@ export default function App() {
   const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
   const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
 
-  // ==========================================
-  // ✨ 完美版：隨時隨地返回頂部 & 深層路由
-  // ==========================================
   useEffect(() => {
-    // 1. 攔截導覽列點擊：只負責滑動畫面，不產生垃圾歷史紀錄
+    // 1. 攔截導覽列點擊
     const handleNavClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
@@ -143,11 +137,19 @@ export default function App() {
           e.preventDefault(); 
           if (id === 'home') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 💡 關鍵修正：當點擊 Home 回到頂部時，用 replaceState 洗掉網址紀錄
+            // 這樣在首頁按「上一頁」，就會直接離開網站，而不會鬼打牆退回中間
+            history.replaceState(null, '', window.location.pathname);
+            
+            // 同時確保所有彈窗關閉
+            setSelectedCategory(null);
+            setSelectedWork(null);
+            setEnlargedImage(null);
           } else {
             const el = document.getElementById(id);
             if (el) el.scrollIntoView({ behavior: 'smooth' });
             
-            // 只要我們往下看內容，就確保有一層 #view 歷史，這樣「上一頁」按鈕才能生效
             if (window.location.hash === '' || window.location.hash === '#home') {
               history.pushState(null, '', '#view');
             }
@@ -157,16 +159,15 @@ export default function App() {
     };
     document.addEventListener('click', handleNavClick);
 
-    // 2. 隨時隨地監聽滑動：無 BUG 版
+    // 2. 隨時隨地監聽滑動
     const handleScrollHistory = () => {
       const currentHash = window.location.hash;
-      const isPastHero = window.scrollY > window.innerHeight * 0.2; // 滑動超過 20% 就算離開首頁
+      const isPastHero = window.scrollY > window.innerHeight * 0.2; 
 
-      // 如果往下捲動，而且網址是空的，就塞入 #view 準備讓上一頁攔截
       if (isPastHero && (currentHash === '' || currentHash === '#home')) {
         history.pushState(null, '', '#view');
       } 
-      // 如果手動滑回最上面，就把 #view 洗掉，不殘留歷史
+      // 💡 關鍵修正：手動往上滑回頂部時，也要洗掉紀錄
       else if (!isPastHero && currentHash === '#view') {
         history.replaceState(null, '', window.location.pathname);
       }
@@ -179,22 +180,17 @@ export default function App() {
       const parts = hash.split('/');
       const catId = parts[0];
 
-      // 如果退回最乾淨的狀態 (代表使用者按了返回，退出了 #view)
       if (!catId || catId === 'home') {
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
-        // ✨ 神之手：強制平滑捲動回最頂部
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } 
-      // 如果使用者在正常瀏覽狀態 (#view)
       else if (catId === 'view') {
-        // 確保所有作品視窗關閉，畫面留在目前閱讀的位置
         setSelectedCategory(null);
         setSelectedWork(null);
         setEnlargedImage(null);
       } 
-      // 如果網址是作品 (e.g., #identity/...)
       else {
         const isValidCategory = categories.some(c => c.id === catId);
         if (isValidCategory) {
@@ -223,7 +219,7 @@ export default function App() {
     };
   }, []);
 
-  // 🖱️ 攔截器 1：設定分類 (當點擊 ✕ 關閉時，用 replace 替換掉歷史，避免狂按上一頁出不去)
+  // 🖱️ 攔截器 1：設定分類
   const handleSetSelectedCategory = (id: string | null) => {
     if (id) {
       window.location.hash = id; 
@@ -256,9 +252,6 @@ export default function App() {
     }
   };
 
-  // ==========================================
-  // ⌨️ 鍵盤 ESC 一鍵關閉
-  // ==========================================
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
