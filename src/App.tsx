@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (包含更新為 .png 的東港囡仔)
+// 🚀 圖片路徑配置
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -58,7 +58,7 @@ const package2Image = '/xomox727/package-2.jpg';
 const illustration1Image = '/xomox727/illustration-1.jpg';
 const illustration2Image = '/xomox727/illustration-2.jpg';
 
-// ✨ 東港囡仔 (已修正為 .png)
+// ✨ 東港囡仔圖檔定義與系列圖 (PNG 格式)
 const package3Image = '/xomox727/package-3.png'; 
 const package3Pic1 = '/xomox727/package3-pic1.png'; 
 const package3Pic2 = '/xomox727/package3-pic2.png'; 
@@ -71,7 +71,7 @@ import { AboutSection, ContactSection } from './components/AboutContact';
 import { Footer } from './components/Footer';
 import { Modals } from './components/Modals';
 
-type Work = { id: string; thumb: string; full: string; title?: string; type?: 'single' | 'gallery'; galleryImages?: string[]; contain?: boolean; imageClass?: string; };
+type Work = { id: string; thumb: string; full: string; title?: string; type?: 'single' | 'gallery'; galleryImages?: string[]; contain?: boolean; imageClass?: string; customClass?: string; };
 
 const anotherWorks: Work[] = [
   { id: 'another-0', thumb: another1Image, full: another1Image, type: 'gallery', galleryImages: [another1Image], title: '廣宣品' },
@@ -96,10 +96,11 @@ const layoutWorks: Work[] = [
   { id: 'layout-2', thumb: layout3Image, full: layout3Image, title: '吉福堂', type: 'gallery', contain: true, imageClass: 'p-10', galleryImages: [layout3Pic1, layout3Pic2] }
 ];
 
+// ✨ 東港囡仔 排在 Index 0 (第一位)，維持統一視覺特效
 const packageWorks: Work[] = [
+  { id: 'package-2', thumb: package3Image, full: package3Image, title: '東港囡仔', type: 'gallery', contain: true, galleryImages: [package3Pic1, package3Pic2, package3Pic3] },
   { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'gallery', galleryImages: [package1Image] },
   { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'gallery', galleryImages: [package2Image] },
-  { id: 'package-2', thumb: package3Image, full: package3Image, title: '東港囡仔', type: 'gallery', contain: true, galleryImages: [package3Pic1, package3Pic2, package3Pic3] }
 ];
 
 const illustrationWorks: Work[] = [
@@ -133,7 +134,6 @@ export default function App() {
 
   const isScrollingRef = useRef(false);
 
-  // 💡 防護鎖
   const navLock = useRef(false);
   const executeNav = (action: () => void) => {
     if (navLock.current) return;
