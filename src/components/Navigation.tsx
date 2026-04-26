@@ -13,7 +13,13 @@ interface NavigationProps {
 const navItems = ['HOME', 'WORK', 'ABOUT', 'CONTACT'];
 
 export const Navigation = React.memo(
-  ({ activeSection, isDarkMode, setIsDarkMode, setIsHovering, onNavClick }: NavigationProps) => {
+  ({
+    activeSection,
+    isDarkMode,
+    setIsDarkMode,
+    setIsHovering,
+    onNavClick,
+  }: NavigationProps) => {
     return (
       <>
         <a
@@ -23,6 +29,7 @@ export const Navigation = React.memo(
           Skip to main content
         </a>
 
+        {/* Desktop Navigation */}
         <nav
           aria-label="Main Desktop Navigation"
           className="fixed top-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-6xl h-16 bg-white/65 dark:bg-white/[0.055] backdrop-blur-2xl z-50 hidden md:flex items-center justify-between px-7 border border-white/70 dark:border-white/10 rounded-full shadow-[0_20px_70px_rgba(46,64,111,0.10)] dark:shadow-[0_20px_70px_rgba(0,0,0,0.35)] transition-all duration-500"
@@ -31,7 +38,7 @@ export const Navigation = React.memo(
             onClick={() => onNavClick('home')}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
-            className="text-[12px] font-bold tracking-[0.18em] text-[#2e406f] dark:text-white"
+            className="-m-4 px-4 py-4 text-[12px] font-bold tracking-[0.18em] text-[#2e406f] dark:text-white"
           >
             CHENG KUEI CHIEN
           </button>
@@ -50,15 +57,16 @@ export const Navigation = React.memo(
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     aria-current={active ? 'page' : undefined}
-                    className={`relative text-[12px] font-bold tracking-[0.18em] transition-colors duration-300 ${
+                    className={`relative -m-4 px-4 py-4 text-[12px] font-bold tracking-[0.18em] transition-colors duration-300 ${
                       active
                         ? 'text-[#2e406f] dark:text-white'
                         : 'text-[#2e406f]/40 hover:text-[#2e406f] dark:text-white/35 dark:hover:text-white'
                     }`}
                   >
                     {item}
+
                     <span
-                      className={`absolute left-1/2 -translate-x-1/2 -bottom-2 h-1 w-1 rounded-full bg-[#ffd9f9] transition-opacity duration-300 ${
+                      className={`absolute left-1/2 -translate-x-1/2 bottom-2 h-1 w-1 rounded-full bg-[#ffd9f9] transition-opacity duration-300 ${
                         active ? 'opacity-100' : 'opacity-0'
                       }`}
                     />
@@ -74,7 +82,7 @@ export const Navigation = React.memo(
             onMouseLeave={() => setIsHovering(false)}
             whileHover={{ scale: 1.08, rotate: 10 }}
             whileTap={{ scale: 0.92 }}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/80 dark:bg-white/10 text-[#2e406f] dark:text-white shadow-sm border border-black/5 dark:border-white/10"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 dark:bg-white/10 text-[#2e406f] dark:text-white shadow-sm border border-black/5 dark:border-white/10"
             aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             aria-pressed={isDarkMode}
           >
@@ -82,6 +90,7 @@ export const Navigation = React.memo(
           </motion.button>
         </nav>
 
+        {/* Mobile Navigation */}
         <nav
           aria-label="Main Mobile Navigation"
           className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-50 rounded-full flex items-center justify-between px-5 py-4 bg-white/60 dark:bg-white/[0.07] backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-[0_15px_50px_rgba(46,64,111,0.16)]"
@@ -95,7 +104,7 @@ export const Navigation = React.memo(
                 <li key={item} className="flex-1 flex justify-center">
                   <button
                     onClick={() => onNavClick(id)}
-                    className={`text-[10px] font-bold tracking-[0.12em] transition-colors ${
+                    className={`-m-3 px-3 py-3 text-[10px] font-bold tracking-[0.12em] transition-colors ${
                       active
                         ? 'text-[#2e406f] dark:text-white'
                         : 'text-[#2e406f]/45 dark:text-white/40'
