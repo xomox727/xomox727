@@ -10,17 +10,18 @@ export const Footer = ({ setIsHovering }: FooterProps) => {
           CHENG KUEI CHIEN<span className="text-[#ffd9f9]">.</span>
         </p>
 
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-white/55">
           © 2026 Cheng Kuei Chien. All rights reserved.
         </p>
 
         <button
+          type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           onMouseEnter={() => setIsHovering?.(true)}
           onMouseLeave={() => setIsHovering?.(false)}
-          className="text-[11px] font-bold tracking-[0.18em] text-white/60 hover:text-white transition-colors"
+          className="text-[11px] font-bold tracking-[0.18em] text-white/65 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:rounded-full px-3 py-2"
         >
-          BACK TO TOP ↑
+          TOP ↑
         </button>
       </div>
     </footer>
