@@ -34,8 +34,17 @@ export const Modals = React.memo(
     setIsHovering,
     isDarkMode,
   }: ModalsProps) => {
+    const closeLockRef = React.useRef(false);
+
     const closeEnlargedImage = () => {
+      if (closeLockRef.current) return;
+
+      closeLockRef.current = true;
       setEnlargedImage(null);
+
+      window.setTimeout(() => {
+        closeLockRef.current = false;
+      }, 500);
     };
 
     return (
@@ -82,9 +91,7 @@ export const Modals = React.memo(
                       type="button"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.45,
-                      }}
+                      transition={{ duration: 0.45 }}
                       onClick={() => setSelectedWork(work)}
                       onMouseEnter={() => setIsHovering(true)}
                       onMouseLeave={() => setIsHovering(false)}
@@ -240,6 +247,7 @@ export const Modals = React.memo(
               transition={{ duration: 0.25 }}
               className="fixed inset-0 z-[80] bg-[#f8f7f4]/98 dark:bg-[#070b12]/98 flex items-center justify-center p-4 md:p-8 cursor-zoom-out backdrop-blur-sm"
               onClick={closeEnlargedImage}
+              onDoubleClick={(event) => event.preventDefault()}
               role="presentation"
             >
               <button
@@ -248,6 +256,7 @@ export const Modals = React.memo(
                   event.stopPropagation();
                   closeEnlargedImage();
                 }}
+                onDoubleClick={(event) => event.preventDefault()}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
                 className="absolute top-5 right-5 md:top-8 md:right-8 z-10 text-xs font-bold tracking-[0.2em] uppercase text-[#2e406f]/60 hover:text-[#2e406f] dark:text-white/55 dark:hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white focus-visible:rounded-full px-3 py-2"
@@ -268,6 +277,7 @@ export const Modals = React.memo(
                   event.stopPropagation();
                   closeEnlargedImage();
                 }}
+                onDoubleClick={(event) => event.preventDefault()}
               />
             </motion.div>
           )}
