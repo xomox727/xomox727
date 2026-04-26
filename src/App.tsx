@@ -30,33 +30,25 @@ export default function App() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // 滑鼠外圈：保留原本跟隨感，但減少拖慢
+  /**
+   * 游標效能優化：
+   * 外圈：保留柔順感，但比原本更跟手
+   * 中心白點：直接跟滑鼠，不再 spring 延遲
+   */
   const mouseXSpring = useSpring(mouseX, {
-    damping: 32,
-    stiffness: 320,
-    mass: 0.35,
+    damping: 22,
+    stiffness: 650,
+    mass: 0.18,
   });
 
   const mouseYSpring = useSpring(mouseY, {
-    damping: 32,
-    stiffness: 320,
-    mass: 0.35,
-  });
-
-  // 中心小點：反應更快
-  const dotXSpring = useSpring(mouseX, {
-    damping: 26,
-    stiffness: 750,
-    mass: 0.22,
-  });
-
-  const dotYSpring = useSpring(mouseY, {
-    damping: 26,
-    stiffness: 750,
-    mass: 0.22,
+    damping: 22,
+    stiffness: 650,
+    mass: 0.18,
   });
 
   const { scrollYProgress } = useScroll();
+
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
@@ -89,7 +81,11 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedCategory, selectedWork, enlargedImage]);
 
-  // 滑鼠效能優化：用 requestAnimationFrame 限制更新頻率
+  /**
+   * 滑鼠位置更新：
+   * 用 requestAnimationFrame 控制更新頻率，
+   * 避免 mousemove 事件過多造成掉幀。
+   */
   useEffect(() => {
     let frameId: number | null = null;
     let latestX = 0;
@@ -149,18 +145,18 @@ export default function App() {
           opacity: isHovering ? 0.6 : 1,
         }}
         transition={{
-          backgroundColor: { duration: 0.18 },
-          scale: { duration: 0.18 },
-          opacity: { duration: 0.18 },
+          backgroundColor: { duration: 0.12 },
+          scale: { duration: 0.12 },
+          opacity: { duration: 0.12 },
         }}
       />
 
-      {/* 自訂滑鼠中心點 */}
+      {/* 自訂滑鼠中心白點：直接跟滑鼠，比 spring 更快 */}
       <motion.div
         className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white will-change-transform"
         style={{
-          x: dotXSpring,
-          y: dotYSpring,
+          x: mouseX,
+          y: mouseY,
           translateX: '-50%',
           translateY: '-50%',
         }}
