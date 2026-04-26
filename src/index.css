@@ -39,7 +39,41 @@
 .category-card:hover img {
   transform: translateZ(0) scale(1.08) !important;
 }
+html {
+  scroll-behavior: smooth;
+}
 
+body {
+  cursor: none;
+}
+
+a,
+button {
+  cursor: none;
+}
+
+.category-card,
+.work-card {
+  overflow: hidden;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: layout paint;
+  isolation: isolate;
+}
+
+.category-card img,
+.work-card img {
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  will-change: transform;
+  pointer-events: none;
+  user-select: none;
+}
+
+body.modal-open {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
 body.modal-open {
   overflow: hidden !important;
   touch-action: none !important;
