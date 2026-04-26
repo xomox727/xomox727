@@ -14,8 +14,15 @@ export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
 
-  const smoothX = useSpring(mouseX, { stiffness: 70, damping: 24 });
-  const smoothY = useSpring(mouseY, { stiffness: 70, damping: 24 });
+  const smoothX = useSpring(mouseX, {
+    stiffness: 70,
+    damping: 24,
+  });
+
+  const smoothY = useSpring(mouseY, {
+    stiffness: 70,
+    damping: 24,
+  });
 
   const gridX = useTransform(smoothX, [0, 1], ['-18px', '18px']);
   const gridY = useTransform(smoothY, [0, 1], ['-14px', '14px']);
@@ -31,12 +38,15 @@ export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
 
   const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
+
     mouseX.set((event.clientX - rect.left) / rect.width);
     mouseY.set((event.clientY - rect.top) / rect.height);
   };
 
   const scrollToWork = () => {
-    document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('work')?.scrollIntoView({
+      behavior: 'smooth',
+    });
   };
 
   return (
@@ -64,7 +74,10 @@ export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: 0.9,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           className="text-center md:text-left"
         >
           <p className="text-[#2e406f]/55 dark:text-white/45 font-bold tracking-[0.26em] text-xs md:text-sm mb-7">
@@ -101,21 +114,29 @@ export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
           </motion.button>
         </motion.div>
 
-        {/* Right Graphic */}
+        {/* Right Hero Graphic */}
         <div className="relative h-[520px] md:h-[680px]">
-          {/* back paper */}
+          {/* Back Paper */}
           <motion.div
             className="absolute right-0 top-6 w-[78%] h-[82%] rounded-[1.6rem] bg-white/58 dark:bg-white/[0.04] border border-[#2e406f]/12 dark:border-white/10 shadow-[0_30px_90px_rgba(46,64,111,0.10)]"
-            style={{ x: gridX, y: gridY }}
+            style={{
+              x: gridX,
+              y: gridY,
+            }}
           >
             <div className="absolute inset-8 border border-[#2e406f]/16 dark:border-white/10" />
+
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#2e406f_1px,transparent_1px),linear-gradient(to_bottom,#2e406f_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.08]" />
           </motion.div>
 
-          {/* blue card */}
+          {/* Blue Card */}
           <motion.div
             className="absolute left-[8%] top-[8%] w-[48%] h-[55%] rounded-[1.4rem] bg-[#2e406f] shadow-[0_35px_90px_rgba(46,64,111,0.26)] overflow-hidden"
-            style={{ x: blueX, y: blueY, rotate: -1.5 }}
+            style={{
+              x: blueX,
+              y: blueY,
+              rotate: -1.5,
+            }}
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.12),transparent_32%)]" />
 
@@ -145,7 +166,7 @@ export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
             </div>
           </motion.div>
 
-          {/* white card */}
+          {/* White Card */}
           <motion.div
             className="absolute left-[20%] top-[35%] w-[50%] h-[38%] rounded-[1.3rem] bg-[#f8f7f4] dark:bg-[#101722] border border-white/70 dark:border-white/10 shadow-[0_35px_90px_rgba(46,64,111,0.18)] overflow-hidden"
             style={{
@@ -156,13 +177,11 @@ export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
           >
             <div className="absolute left-0 top-0 w-14 h-14 rounded-br-[1rem] bg-[#ffd9f9]" />
 
-            <h2 className="absolute left-10 top-24 text-[#2e406f] dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.03em]">
-              Visual
-              <br />
-              Identity
-              <br />
-              System.
-            </h2>
+            <div className="absolute left-10 top-24 w-[62%] h-px bg-[#2e406f]/20 dark:bg-white/15" />
+            <div className="absolute left-10 top-36 w-[48%] h-px bg-[#2e406f]/16 dark:bg-white/12" />
+            <div className="absolute left-10 top-48 w-[70%] h-px bg-[#2e406f]/14 dark:bg-white/10" />
+
+            <div className="absolute right-10 top-24 w-14 h-14 rounded-full border border-[#2e406f]/18 dark:border-white/12" />
 
             <p className="absolute left-10 bottom-10 text-[#2e406f]/55 dark:text-white/45 text-xs leading-6 tracking-[0.14em] font-semibold">
               BRANDING
@@ -171,19 +190,27 @@ export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
             </p>
           </motion.div>
 
-          {/* pink card */}
+          {/* Pink Card */}
           <motion.div
             className="absolute right-[2%] bottom-[7%] w-[38%] h-[32%] rounded-[1.3rem] bg-[#ffd9f9] shadow-[0_30px_80px_rgba(255,217,249,0.35)]"
-            style={{ x: pinkX, y: pinkY, rotate: 2 }}
+            style={{
+              x: pinkX,
+              y: pinkY,
+              rotate: 2,
+            }}
           >
             <div className="absolute right-10 bottom-10 w-16 h-16 rounded-full bg-[#2e406f]" />
             <div className="absolute left-8 top-8 w-12 h-px bg-[#2e406f]" />
           </motion.div>
 
-          {/* navy front card */}
+          {/* Front Navy Card */}
           <motion.div
             className="absolute right-[14%] bottom-[4%] w-[34%] h-[44%] rounded-[1.2rem] bg-[#2e406f] shadow-[0_35px_90px_rgba(46,64,111,0.30)]"
-            style={{ x: blueX, y: pinkY, rotate: 3 }}
+            style={{
+              x: blueX,
+              y: pinkY,
+              rotate: 3,
+            }}
           >
             <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffd9f9_1.5px,transparent_1.5px)] bg-[size:18px_18px]" />
 
