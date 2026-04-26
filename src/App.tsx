@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (保證 100% 留存)
+// 🚀 圖片路徑配置 (精確對齊你的 Gallery 命名規範)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -58,6 +58,12 @@ const package2Image = '/xomox727/package-2.jpg';
 const illustration1Image = '/xomox727/illustration-1.jpg';
 const illustration2Image = '/xomox727/illustration-2.jpg';
 
+// ✨ 東港囡仔 (專案三) 的首圖與子圖命名
+const package3Image = '/xomox727/package-3.jpg'; // 外層首圖
+const package3Pic1 = '/xomox727/package3-pic1.jpg'; // 內頁圖一
+const package3Pic2 = '/xomox727/package3-pic2.jpg'; // 內頁圖二
+const package3Pic3 = '/xomox727/package3-pic3.jpg'; // 內頁圖三
+
 import { Navigation } from './components/Navigation';
 import { HomeHero } from './components/HomeHero';
 import { WorkSection } from './components/WorkSection';
@@ -92,7 +98,9 @@ const layoutWorks: Work[] = [
 
 const packageWorks: Work[] = [
   { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'gallery', galleryImages: [package1Image] },
-  { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'gallery', galleryImages: [package2Image] }
+  { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'gallery', galleryImages: [package2Image] },
+  // ✨ 東港囡仔：外層顯示 package3Image，點擊後展開包含三張子圖的畫廊
+  { id: 'package-2', thumb: package3Image, full: package3Image, title: '東港囡仔', type: 'gallery', contain: true, galleryImages: [package3Pic1, package3Pic2, package3Pic3] }
 ];
 
 const illustrationWorks: Work[] = [
@@ -126,19 +134,14 @@ export default function App() {
 
   const isScrollingRef = useRef(false);
 
-  // 💡 防護鎖：解決手機版觸控「事件冒泡(Bubbling)」導致的一鍵雙退問題
   const navLock = useRef(false);
   const executeNav = (action: () => void) => {
     if (navLock.current) return;
     navLock.current = true;
     action();
-    // 0.1秒的保護期，遮蔽多餘的穿透點擊
     setTimeout(() => { navLock.current = false; }, 100);
   };
 
-  // ==========================================
-  // ✨ 狀態跟隨網址同步
-  // ==========================================
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
@@ -148,7 +151,6 @@ export default function App() {
       const hash = window.location.hash.replace('#', '');
       const parts = hash.split('/');
       
-      // 狀態 A：網址清空，退回頂部首頁
       if (hash === '') {
         setActiveSection('home'); 
         setSelectedCategory(null);
@@ -163,7 +165,6 @@ export default function App() {
         return;
       }
 
-      // 狀態 B：一般區塊切換
       if (['work', 'about', 'contact'].includes(hash)) {
         setActiveSection(hash); 
         setSelectedCategory(null);
@@ -172,10 +173,9 @@ export default function App() {
         return;
       }
 
-      // 狀態 C：彈窗層級
       const catId = parts[0];
       const workId = parts[1];
-      const imgParam = parts[2]; // 改為接收 img-0 格式
+      const imgParam = parts[2];
 
       const currentCat = categories.find(c => c.id === catId);
       if (currentCat) {
@@ -184,12 +184,10 @@ export default function App() {
           const currentWork = currentCat.works?.find(w => w.id === workId);
           setSelectedWork(currentWork || null);
 
-          // ✨ 解析安全的圖片索引網址
           if (imgParam && imgParam.startsWith('img-') && currentWork?.galleryImages) {
             const idx = parseInt(imgParam.replace('img-', ''), 10);
             setEnlargedImage(currentWork.galleryImages[idx] || null);
           } else if (imgParam) {
-            // 防呆處理
             setEnlargedImage(decodeURIComponent(imgParam));
           } else {
             setEnlargedImage(null);
@@ -211,9 +209,6 @@ export default function App() {
     };
   }, []);
 
-  // ==========================================
-  // ✨ 精確滾動同步
-  // ==========================================
   useEffect(() => {
     const handleScroll = () => {
       if (document.body.classList.contains('modal-open') || isScrollingRef.current) return;
@@ -248,9 +243,6 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [activeSection]);
 
-  // ==========================================
-  // 🖱️ 交互攔截器：引入防護鎖
-  // ==========================================
   const handleNavClick = (id: string) => {
     executeNav(() => {
       if (id === 'home') {
@@ -297,7 +289,6 @@ export default function App() {
     executeNav(() => {
       if (img && selectedCategory && selectedWork) {
         setEnlargedImage(img);
-        // ✨ 使用安全的 Index，避免特殊字元在手機上造成當機
         const imgIndex = selectedWork.galleryImages?.findIndex(x => x === img) ?? 0;
         window.history.pushState(null, '', `#${selectedCategory}/${selectedWork.id}/img-${imgIndex}`);
       } else {
