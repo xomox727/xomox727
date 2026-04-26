@@ -1,110 +1,148 @@
 import { motion } from 'motion/react';
-import React from 'react';
+import { useState } from 'react';
+
+type Work = {
+  id: string;
+  thumb: string;
+  full: string;
+  title?: string;
+  type?: 'single' | 'gallery';
+  galleryImages?: string[];
+  contain?: boolean;
+  imageClass?: string;
+  customClass?: string;
+};
+
+type Category = {
+  id: string;
+  title: string;
+  color: string;
+  image: string;
+  position?: string;
+  customClass?: string;
+  works: Work[];
+};
 
 interface WorkSectionProps {
-  categories: any[];
-  setSelectedCategory: (id: string) => void;
+  categories: Category[];
+  setSelectedCategory: (id: string | null) => void;
   setIsHovering: (val: boolean) => void;
 }
 
-export const WorkSection = React.memo(({ categories, setSelectedCategory, setIsHovering }: WorkSectionProps) => {
+export const WorkSection = ({ categories, setSelectedCategory, setIsHovering }: WorkSectionProps) => {
+  const [hovered, setHovered] = useState<string | null>(categories[0]?.id ?? null);
+
   return (
-    <section id="work" className="min-h-screen flex flex-col items-center justify-center py-32 px-6">
-      
-      {/* 🛡️ 終極防護樣式表 */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        /* 1. 消滅手機版按鈕點擊遮罩，並強制鎖定圓角防破圖 (iOS Safari 剋星) */
-        button {
-          -webkit-tap-highlight-color: transparent;
-          -webkit-mask-image: -webkit-radial-gradient(white, black);
-          mask-image: radial-gradient(white, black);
-          transform: translateZ(0); /* 強制建立獨立渲染圖層 */
-          isolation: isolate;
-        }
+    <section
+      id="work"
+      className="relative min-h-screen bg-[#f8f7f4] dark:bg-[#070b12] px-6 md:px-10 py-28 md:py-36 overflow-hidden"
+    >
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_12%_20%,rgba(255,217,249,0.32),transparent_22%),radial-gradient(circle_at_90%_70%,rgba(46,64,111,0.10),transparent_30%)] dark:bg-[radial-gradient(circle_at_12%_20%,rgba(255,217,249,0.08),transparent_22%),radial-gradient(circle_at_90%_70%,rgba(46,64,111,0.22),transparent_30%)]" />
 
-        /* 2. 專注於 flex 變化，打造純淨手風琴展開 */
-        .pure-flex-card {
-          transition: flex 0.7s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        
-        /* 3. 獨立的背景圖片過渡動畫 */
-        .pure-bg-layer {
-          transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1), filter 0.7s ease;
-        }
+      <div className="relative z-10 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-[0.8fr_1.2fr] gap-10 md:gap-16 mb-16">
+          <div>
+            <p className="text-[#ffd9f9] text-xs font-bold tracking-[0.2em] mb-5">
+              SELECTED WORK
+            </p>
+            <h2 className="text-[#2e406f] dark:text-white text-[clamp(2.5rem,5vw,5.4rem)] font-black leading-[0.95] tracking-[-0.04em]">
+              DESIGNING
+              <br />
+              MEANINGFUL
+              <br />
+              VISUALS<span className="text-[#ffd9f9]">.</span>
+            </h2>
+          </div>
 
-        /* 4. 神級防護：確保觸控設備絕對不會觸發詭異的 Hover 放大 */
-        @media (hover: none) {
-          .group:hover .pure-bg-layer {
-            transform: scale(1) !important;
-          }
-        }
-      `}} />
+          <div className="flex items-end">
+            <p className="max-w-md text-[#2e406f]/60 dark:text-white/55 leading-8 text-sm md:text-base">
+              保留你原本的作品分類與圖片內容，只重新包裝展示節奏。滑鼠移入時，分類像風琴一樣展開，讓作品本身成為主角。
+            </p>
+          </div>
+        </div>
 
-      <motion.ul 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="flex flex-row flex-wrap gap-4 w-full max-w-7xl justify-center group/list list-none p-0 m-0"
-      >
-        {categories.map((cat, index) => {
-          // 將 tailwind 的 object-position 轉換為 bg-position
-          const bgPosition = cat.position ? cat.position.replace('object-', 'bg-') : 'bg-center';
+        <div className="hidden md:flex h-[560px] gap-4">
+          {categories.map((category) => {
+            const active = hovered === category.id;
 
-          return (
-            <motion.li
-              key={cat.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              // 乾淨的 Flex 排版，拔除所有 JS 動畫干擾
-              className="pure-flex-card relative w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)] lg:w-auto lg:flex-1 lg:hover:flex-[2.5] h-[300px] sm:h-[400px] lg:h-[500px]"
-            >
-              <button
-                onClick={() => setSelectedCategory(cat.id)}
-                onMouseEnter={() => setIsHovering(true)}
+            return (
+              <motion.button
+                key={category.id}
+                onMouseEnter={() => {
+                  setHovered(category.id);
+                  setIsHovering(true);
+                }}
                 onMouseLeave={() => setIsHovering(false)}
-                aria-label={`View ${cat.title} projects`}
-                // 原生按鈕，完全不抖，圓角鎖死
-                className="w-full h-full overflow-hidden group text-left rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand relative block"
+                onClick={() => setSelectedCategory(category.id)}
+                animate={{ flex: active ? 2.4 : 0.8 }}
+                transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+                className="group relative overflow-hidden rounded-[2rem] bg-white/65 dark:bg-white/[0.06] border border-white/70 dark:border-white/10 shadow-[0_20px_70px_rgba(46,64,111,0.10)] text-left"
               >
-              
-              {/* 背景圖片層：完美透出你的 cat.color */}
-              <div className={`absolute inset-0 ${cat.color} overflow-hidden`}>
-                <div 
-                  className={`pure-bg-layer w-full h-full bg-cover ${bgPosition} ${cat.customClass || ''} 
-                    grayscale-0 sm:grayscale sm:group-hover:grayscale-0 
-                    opacity-100 sm:opacity-60 sm:group-hover:opacity-100 
-                    sm:group-hover:scale-105`}
-                  style={{ backgroundImage: `url('${cat.image}')` }}
+                <img
+                  src={category.image}
+                  alt={category.title}
+                  draggable={false}
+                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
+                    category.position ?? ''
+                  } ${category.customClass ?? ''}`}
                 />
-              </div>
 
-              {/* 遮罩漸層：零延遲、極速反應 */}
-              <div className="absolute inset-0 bg-black/30 opacity-0 lg:group-hover/list:opacity-100 lg:group-hover:!opacity-0 transition-opacity duration-300 ease-out pointer-events-none z-10" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none z-10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#2e406f]/75 via-[#2e406f]/10 to-white/10 dark:from-black/75" />
 
-              {/* 標題與毛玻璃：零延遲，瞬間順滑彈出 */}
-              <div className="absolute bottom-8 left-0 w-full text-center z-30 translate-y-0 sm:translate-y-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 transition-all duration-300 ease-out">
-                <span 
-                  className="text-[11px] font-bold tracking-[0.2em] text-white rounded-full px-6 py-3 inline-block"
-                  style={{
-                    background: 'rgba(255,255,255, 0.15)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 4px 12px rgba(0,0,0,0.2)'
-                  }}
-                >
-                  {cat.title}
-                </span>
+                <div className="absolute inset-x-0 bottom-0 p-8">
+                  <p className="text-white/60 text-[10px] font-bold tracking-[0.22em] mb-3">
+                    0{categories.indexOf(category) + 1}
+                  </p>
+
+                  <h3 className="text-white text-2xl md:text-4xl font-black tracking-[-0.04em]">
+                    {category.title}
+                  </h3>
+
+                  <motion.div
+                    initial={false}
+                    animate={{ opacity: active ? 1 : 0, y: active ? 0 : 12 }}
+                    transition={{ duration: 0.35 }}
+                    className="mt-5"
+                  >
+                    <p className="text-white/70 text-sm leading-7 max-w-xs">
+                      {category.works.length} projects inside
+                    </p>
+                    <span className="mt-6 inline-flex w-11 h-11 rounded-full items-center justify-center bg-[#ffd9f9] text-[#2e406f]">
+                      →
+                    </span>
+                  </motion.div>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        <div className="md:hidden grid gap-5">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className="relative h-[220px] rounded-[1.6rem] overflow-hidden bg-white/70 dark:bg-white/[0.06] border border-white/60 dark:border-white/10 text-left"
+            >
+              <img
+                src={category.image}
+                alt={category.title}
+                draggable={false}
+                className={`absolute inset-0 w-full h-full object-cover ${category.position ?? ''} ${
+                  category.customClass ?? ''
+                }`}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#2e406f]/75 via-transparent to-white/10" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <h3 className="text-white text-3xl font-black tracking-[-0.04em]">
+                  {category.title}
+                </h3>
+                <p className="text-white/65 text-xs mt-2">{category.works.length} projects</p>
               </div>
-              
-              </button>
-            </motion.li>
-          );
-        })}
-      </motion.ul>
+            </button>
+          ))}
+        </div>
+      </div>
     </section>
   );
-});
-
-WorkSection.displayName = 'WorkSection';
+};
