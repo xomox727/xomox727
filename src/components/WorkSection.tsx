@@ -46,7 +46,7 @@ export const WorkSection = ({
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_12%_20%,rgba(255,217,249,0.20),transparent_22%),radial-gradient(circle_at_90%_70%,rgba(46,64,111,0.08),transparent_30%)] dark:bg-[radial-gradient(circle_at_12%_20%,rgba(255,217,249,0.06),transparent_22%),radial-gradient(circle_at_90%_70%,rgba(46,64,111,0.20),transparent_30%)]" />
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-[0.8fr_1.2fr] gap-10 md:gap-16 mb-16">
+        <div className="grid xl:grid-cols-[0.8fr_1.2fr] gap-10 xl:gap-16 mb-16">
           <div>
             <div className="flex items-center gap-3 mb-5">
               <span className="w-8 h-px bg-[#ffd9f9]" />
@@ -67,7 +67,8 @@ export const WorkSection = ({
           </div>
         </div>
 
-        <div className="hidden md:flex h-[560px] gap-4">
+        {/* 桌機版：xl 以上才使用 accordion，不影響平板 */}
+        <div className="hidden xl:flex h-[560px] gap-4">
           {categories.map((category, index) => {
             const active = hovered === category.id;
 
@@ -82,86 +83,122 @@ export const WorkSection = ({
                 onMouseLeave={() => setIsHovering(false)}
                 onClick={() => setSelectedCategory(category.id)}
                 animate={{
-                  flex: active ? 2.4 : 0.8,
+                  flex: active ? 2.6 : 0.9,
                 }}
                 transition={{
                   duration: 0.65,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="category-card group relative overflow-hidden rounded-[2rem] bg-white/65 dark:bg-white/[0.06] border border-white/70 dark:border-white/10 shadow-[0_20px_70px_rgba(46,64,111,0.10)] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
+                className="category-card group relative min-w-[112px] overflow-hidden rounded-[2rem] bg-white/65 dark:bg-white/[0.06] border border-white/70 dark:border-white/10 shadow-[0_20px_70px_rgba(46,64,111,0.10)] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
               >
-                <img
-                  src={category.image}
-                  alt={category.title}
-                  draggable={false}
-                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
-                    category.position ?? ''
-                  } ${category.customClass ?? ''}`}
-                />
+                <div className="absolute inset-0 flex items-center justify-center bg-white/25 dark:bg-white/[0.025]">
+                  <img
+                    src={category.image}
+                    alt={category.title}
+                    draggable={false}
+                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.025] ${
+                      category.position ?? ''
+                    } ${category.customClass ?? ''}`}
+                  />
+                </div>
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2e406f]/78 via-[#2e406f]/12 to-white/10 dark:from-black/78" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#2e406f]/82 via-[#2e406f]/14 to-white/10 dark:from-black/82" />
 
-                <div className="absolute inset-x-0 bottom-0 p-8">
+                {/* 收合狀態：直式分類名稱 */}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    opacity: active ? 0 : 1,
+                  }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute inset-0 flex items-end justify-center pb-8 pointer-events-none"
+                >
+                  <div className="[writing-mode:vertical-rl] rotate-180 flex items-center gap-4">
+                    <span className="text-white/60 text-[10px] font-bold tracking-[0.22em]">
+                      0{index + 1}
+                    </span>
+
+                    <h3 className="text-white text-lg xl:text-xl font-black tracking-[0.12em] whitespace-nowrap">
+                      {category.title}
+                    </h3>
+                  </div>
+                </motion.div>
+
+                {/* 展開狀態：完整資訊 */}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    opacity: active ? 1 : 0,
+                    y: active ? 0 : 18,
+                  }}
+                  transition={{ duration: 0.35 }}
+                  className="absolute inset-x-0 bottom-0 p-8 pointer-events-none"
+                >
                   <p className="text-white/72 text-[10px] font-bold tracking-[0.22em] mb-3">
                     0{index + 1}
                   </p>
 
-                  <h3 className="text-white text-2xl md:text-4xl font-black tracking-[-0.04em]">
+                  <h3 className="text-white text-2xl xl:text-4xl font-black tracking-[-0.04em] leading-tight break-words max-w-[420px]">
                     {category.title}
                   </h3>
 
-                  <motion.div
-                    initial={false}
-                    animate={{
-                      opacity: active ? 1 : 0,
-                      y: active ? 0 : 12,
-                    }}
-                    transition={{ duration: 0.35 }}
-                    className="mt-5"
-                  >
-                    <p className="text-white/78 text-sm leading-7 max-w-xs">
-                      {category.works.length} projects inside
-                    </p>
+                  <p className="mt-5 text-white/78 text-sm leading-7 max-w-xs">
+                    {category.works.length} projects inside
+                  </p>
 
-                    <span className="mt-6 inline-flex w-11 h-11 rounded-full items-center justify-center bg-[#ffd9f9] text-[#2e406f]">
-                      →
-                    </span>
-                  </motion.div>
-                </div>
+                  <span className="mt-6 inline-flex w-11 h-11 rounded-full items-center justify-center bg-[#ffd9f9] text-[#2e406f]">
+                    →
+                  </span>
+                </motion.div>
               </motion.button>
             );
           })}
         </div>
 
-        <div className="md:hidden grid gap-5">
-          {categories.map((category) => (
-            <button
+        {/* 平板 / 小桌機 / 手機：完整卡片 + 輕微上浮，不影響桌機 accordion */}
+        <div className="grid gap-5 sm:grid-cols-2 xl:hidden">
+          {categories.map((category, index) => (
+            <motion.button
               key={category.id}
               type="button"
               onClick={() => setSelectedCategory(category.id)}
-              className="relative h-[220px] rounded-[1.6rem] overflow-hidden bg-white/70 dark:bg-white/[0.06] border border-white/60 dark:border-white/10 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              whileHover={{ y: -6 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{
+                duration: 0.28,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="group relative min-h-[260px] md:min-h-[320px] lg:min-h-[360px] rounded-[1.6rem] overflow-hidden bg-white/72 dark:bg-white/[0.06] border border-white/70 dark:border-white/10 text-left shadow-[0_18px_55px_rgba(46,64,111,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
             >
-              <img
-                src={category.image}
-                alt={category.title}
-                draggable={false}
-                className={`absolute inset-0 w-full h-full object-cover ${
-                  category.position ?? ''
-                } ${category.customClass ?? ''}`}
-              />
+              <div className="absolute inset-0 flex items-center justify-center bg-white/35 dark:bg-white/[0.025] p-5 md:p-7">
+                <img
+                  src={category.image}
+                  alt={category.title}
+                  draggable={false}
+                  className={`w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.01] ${
+                    category.position ?? ''
+                  } ${category.customClass ?? ''}`}
+                />
+              </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2e406f]/78 via-transparent to-white/10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#2e406f]/82 via-[#2e406f]/18 to-white/5 dark:from-black/82" />
 
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="text-white text-3xl font-black tracking-[-0.04em]">
+              <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
+                <p className="text-white/72 text-[10px] font-bold tracking-[0.22em] mb-3">
+                  0{index + 1}
+                </p>
+
+                <h3 className="text-white text-2xl md:text-3xl font-black tracking-[-0.04em] leading-tight break-words">
                   {category.title}
                 </h3>
 
-                <p className="text-white/78 text-xs mt-2">
+                <p className="text-white/78 text-xs md:text-sm mt-3">
                   {category.works.length} projects
                 </p>
               </div>
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
