@@ -2,6 +2,9 @@
 
 @import "tailwindcss";
 
+/* 讓 Tailwind 的 dark: 可以吃到 <html class="dark"> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ================================
    Base
 ================================ */
@@ -51,7 +54,6 @@ body {
 /* ================================
    Cursor
    只在桌機滑鼠裝置隱藏原生游標
-   手機 / 平板保留系統預設
 ================================ */
 
 @media (min-width: 768px) and (pointer: fine) {
