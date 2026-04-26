@@ -56,7 +56,6 @@ export default function App() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedCategory, selectedWork, enlargedImage]);
 
@@ -67,7 +66,6 @@ export default function App() {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
@@ -76,12 +74,13 @@ export default function App() {
   }, [isDarkMode]);
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-white dark:bg-neutral-950 transition-colors duration-500 overflow-x-hidden relative">
+    <div className="min-h-screen w-full flex flex-col bg-[#f8f7f4] dark:bg-[#070b12] transition-colors duration-500 overflow-x-hidden relative selection:bg-[#ffd9f9] selection:text-[#2e406f]">
       <motion.div
-        className="fixed top-0 left-0 right-0 h-[2px] bg-brand origin-left z-[100]"
+        className="fixed top-0 left-0 right-0 h-[2px] bg-[#ffd9f9] origin-left z-[100]"
         style={{ scaleX }}
       />
 
+      {/* 保留你的自訂滑鼠 */}
       <motion.div
         className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100]"
         style={{
@@ -115,13 +114,14 @@ export default function App() {
         onNavClick={handleNavClick}
       />
 
-      <main className="flex-1 w-full">
+      <main id="main-content" className="flex-1 w-full">
         <HomeHero
           isDarkMode={isDarkMode}
           heroMobileImage={heroImages.heroMobileImage}
           heroSvg={heroImages.heroSvg}
           heroMobileDarkImage={heroImages.heroMobileDarkImage}
           heroDarkSvg={heroImages.heroDarkSvg}
+          setIsHovering={setIsHovering}
         />
 
         <WorkSection
@@ -130,11 +130,11 @@ export default function App() {
           setIsHovering={setIsHovering}
         />
 
-        <AboutSection />
+        <AboutSection setIsHovering={setIsHovering} />
         <ContactSection setIsHovering={setIsHovering} />
       </main>
 
-      <Footer />
+      <Footer setIsHovering={setIsHovering} />
 
       <Modals
         activeCategoryData={activeCategoryData}
