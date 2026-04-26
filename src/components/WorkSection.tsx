@@ -67,9 +67,9 @@ export const WorkSection = ({
           </div>
         </div>
 
-        {/* 桌機版：xl 以上才使用 accordion，不影響平板 */}
+        {/* 桌機 xl 以上：Accordion */}
         <div className="hidden xl:flex h-[560px] gap-4">
-          {categories.map((category, index) => {
+          {categories.map((category) => {
             const active = hovered === category.id;
 
             return (
@@ -113,11 +113,7 @@ export const WorkSection = ({
                   transition={{ duration: 0.25 }}
                   className="absolute inset-0 flex items-end justify-center pb-8 pointer-events-none"
                 >
-                  <div className="[writing-mode:vertical-rl] rotate-180 flex items-center gap-4">
-                    <span className="text-white/60 text-[10px] font-bold tracking-[0.22em]">
-                      0{index + 1}
-                    </span>
-
+                  <div className="[writing-mode:vertical-rl] rotate-180">
                     <h3 className="text-white text-lg xl:text-xl font-black tracking-[0.12em] whitespace-nowrap">
                       {category.title}
                     </h3>
@@ -134,10 +130,6 @@ export const WorkSection = ({
                   transition={{ duration: 0.35 }}
                   className="absolute inset-x-0 bottom-0 p-8 pointer-events-none"
                 >
-                  <p className="text-white/72 text-[10px] font-bold tracking-[0.22em] mb-3">
-                    0{index + 1}
-                  </p>
-
                   <h3 className="text-white text-2xl xl:text-4xl font-black tracking-[-0.04em] leading-tight break-words max-w-[420px]">
                     {category.title}
                   </h3>
@@ -155,9 +147,9 @@ export const WorkSection = ({
           })}
         </div>
 
-        {/* 平板 / 小桌機 / 手機：完整卡片 + 輕微上浮，不影響桌機 accordion */}
+        {/* 平板 / 小桌機 / 手機：完整卡片 + 輕微上浮 */}
         <div className="grid gap-5 sm:grid-cols-2 xl:hidden">
-          {categories.map((category, index) => (
+          {categories.map((category) => (
             <motion.button
               key={category.id}
               type="button"
@@ -186,10 +178,6 @@ export const WorkSection = ({
               <div className="absolute inset-0 bg-gradient-to-t from-[#2e406f]/82 via-[#2e406f]/18 to-white/5 dark:from-black/82" />
 
               <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
-                <p className="text-white/72 text-[10px] font-bold tracking-[0.22em] mb-3">
-                  0{index + 1}
-                </p>
-
                 <h3 className="text-white text-2xl md:text-3xl font-black tracking-[-0.04em] leading-tight break-words">
                   {category.title}
                 </h3>
