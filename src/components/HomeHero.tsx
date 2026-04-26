@@ -107,7 +107,7 @@ export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
             onMouseLeave={() => setIsHovering(false)}
             whileHover={{ y: -3 }}
             whileTap={{ scale: 0.96 }}
-            className="mt-10 inline-flex items-center gap-8 rounded-full border border-[#2e406f]/35 dark:border-white/25 px-8 py-4 text-[#2e406f] dark:text-white text-xs font-black tracking-[0.18em] hover:bg-[#ffd9f9]/45 transition-colors"
+            className="mt-10 inline-flex items-center gap-8 rounded-full border border-[#2e406f]/35 dark:border-white/25 px-10 py-5 text-[#2e406f] dark:text-white text-xs font-black tracking-[0.18em] hover:bg-[#ffd9f9]/45 transition-colors"
           >
             VIEW WORKS
             <span className="text-lg leading-none">→</span>
