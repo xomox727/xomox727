@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring, useMotionValue, AnimatePresence } from 'm
 import { useState, useEffect, useRef } from 'react';
 
 // ==========================================
-// 🚀 圖片路徑配置 (精確對齊你的 Gallery 命名規範)
+// 🚀 圖片路徑配置 (包含更新為 .png 的東港囡仔)
 // ==========================================
 const heroSvg = '/xomox727/hero.svg';
 const heroDarkSvg = '/xomox727/hero-dark.svg';
@@ -58,11 +58,11 @@ const package2Image = '/xomox727/package-2.jpg';
 const illustration1Image = '/xomox727/illustration-1.jpg';
 const illustration2Image = '/xomox727/illustration-2.jpg';
 
-// ✨ 東港囡仔 (專案三) 的首圖與子圖命名
-const package3Image = '/xomox727/package-3.jpg'; // 外層首圖
-const package3Pic1 = '/xomox727/package3-pic1.jpg'; // 內頁圖一
-const package3Pic2 = '/xomox727/package3-pic2.jpg'; // 內頁圖二
-const package3Pic3 = '/xomox727/package3-pic3.jpg'; // 內頁圖三
+// ✨ 東港囡仔 (已修正為 .png)
+const package3Image = '/xomox727/package-3.png'; 
+const package3Pic1 = '/xomox727/package3-pic1.png'; 
+const package3Pic2 = '/xomox727/package3-pic2.png'; 
+const package3Pic3 = '/xomox727/package3-pic3.png'; 
 
 import { Navigation } from './components/Navigation';
 import { HomeHero } from './components/HomeHero';
@@ -99,7 +99,6 @@ const layoutWorks: Work[] = [
 const packageWorks: Work[] = [
   { id: 'package-0', thumb: package1Image, full: package1Image, title: 'MOOD咖啡包、外帶杯', type: 'gallery', galleryImages: [package1Image] },
   { id: 'package-1', thumb: package2Image, full: package2Image, title: '甜點包裝', type: 'gallery', galleryImages: [package2Image] },
-  // ✨ 東港囡仔：外層顯示 package3Image，點擊後展開包含三張子圖的畫廊
   { id: 'package-2', thumb: package3Image, full: package3Image, title: '東港囡仔', type: 'gallery', contain: true, galleryImages: [package3Pic1, package3Pic2, package3Pic3] }
 ];
 
@@ -134,6 +133,7 @@ export default function App() {
 
   const isScrollingRef = useRef(false);
 
+  // 💡 防護鎖
   const navLock = useRef(false);
   const executeNav = (action: () => void) => {
     if (navLock.current) return;
@@ -142,6 +142,9 @@ export default function App() {
     setTimeout(() => { navLock.current = false; }, 100);
   };
 
+  // ==========================================
+  // ✨ 返回邏輯與狀態同步
+  // ==========================================
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
@@ -209,40 +212,64 @@ export default function App() {
     };
   }, []);
 
+  // ==========================================
+  // ⚡ 效能解放：使用 IntersectionObserver
+  // ==========================================
   useEffect(() => {
-    const handleScroll = () => {
+    const observer = new IntersectionObserver((entries) => {
       if (document.body.classList.contains('modal-open') || isScrollingRef.current) return;
 
-      const sections = ['home', 'work', 'about', 'contact'];
-      const current = sections.find(section => {
-        const el = document.getElementById(section);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
-        }
-        return false;
-      });
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const current = entry.target.id;
+          setActiveSection(current);
 
-      if (current && current !== activeSection) {
-        setActiveSection(current);
-        const currentHash = window.location.hash.replace('#', '');
-        if (current === 'home') {
-          if (currentHash) window.history.replaceState(null, '', window.location.pathname);
-        } else {
-          if (!currentHash) {
-             window.history.pushState(null, '', `#${current}`);
-          } else if (['work', 'about', 'contact'].includes(currentHash)) {
-             window.history.replaceState(null, '', `#${current}`);
+          const currentHash = window.location.hash.replace('#', '');
+          if (current === 'home') {
+            if (currentHash) window.history.replaceState(null, '', window.location.pathname);
+          } else {
+            if (!currentHash) {
+               window.history.pushState(null, '', `#${current}`);
+            } else if (['work', 'about', 'contact'].includes(currentHash) && currentHash !== current) {
+               window.history.replaceState(null, '', `#${current}`);
+            }
           }
         }
+      });
+    }, {
+      rootMargin: '-40% 0px -50% 0px'
+    });
+
+    const sections = ['home', 'work', 'about', 'contact'];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // ==========================================
+  // ⚡ 效能解放：RequestAnimationFrame
+  // ==========================================
+  useEffect(() => {
+    let ticking = false;
+    const handleThrottledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setShowBackToTop(window.scrollY > 800);
+          ticking = false;
+        });
+        ticking = true;
       }
-      setShowBackToTop(window.scrollY > 800);
     };
+    window.addEventListener('scroll', handleThrottledScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleThrottledScroll);
+  }, []);
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [activeSection]);
-
+  // ==========================================
+  // 🖱️ 交互攔截器
+  // ==========================================
   const handleNavClick = (id: string) => {
     executeNav(() => {
       if (id === 'home') {
@@ -297,6 +324,7 @@ export default function App() {
     });
   };
 
+  // 📱 CSS 背景凍結
   useEffect(() => {
     if (selectedCategory || selectedWork || enlargedImage) {
       document.body.classList.add('modal-open');
