@@ -10,135 +10,179 @@ interface HomeHeroProps {
   setIsHovering: (val: boolean) => void;
 }
 
-export const HomeHero = ({
-  isDarkMode,
-  heroSvg,
-  heroDarkSvg,
-  heroMobileImage,
-  heroMobileDarkImage,
-  setIsHovering,
-}: HomeHeroProps) => {
-  const x = useMotionValue(0.5);
-  const y = useMotionValue(0.5);
+export const HomeHero = ({ setIsHovering }: HomeHeroProps) => {
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
 
-  const springX = useSpring(x, { stiffness: 70, damping: 24 });
-  const springY = useSpring(y, { stiffness: 70, damping: 24 });
+  const smoothX = useSpring(mouseX, { stiffness: 70, damping: 24 });
+  const smoothY = useSpring(mouseY, { stiffness: 70, damping: 24 });
 
-  const glassX = useTransform(springX, [0, 1], ['18%', '82%']);
-  const glassY = useTransform(springY, [0, 1], ['18%', '82%']);
-  const heroRotate = useTransform(springX, [0, 1], [-2, 2]);
+  const gridX = useTransform(smoothX, [0, 1], ['-18px', '18px']);
+  const gridY = useTransform(smoothY, [0, 1], ['-14px', '14px']);
+
+  const blueX = useTransform(smoothX, [0, 1], ['22px', '-22px']);
+  const blueY = useTransform(smoothY, [0, 1], ['14px', '-14px']);
+
+  const whiteX = useTransform(smoothX, [0, 1], ['-18px', '18px']);
+  const whiteY = useTransform(smoothY, [0, 1], ['-12px', '12px']);
+
+  const pinkX = useTransform(smoothX, [0, 1], ['-28px', '28px']);
+  const pinkY = useTransform(smoothY, [0, 1], ['20px', '-20px']);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    x.set((event.clientX - rect.left) / rect.width);
-    y.set((event.clientY - rect.top) / rect.height);
+    mouseX.set((event.clientX - rect.left) / rect.width);
+    mouseY.set((event.clientY - rect.top) / rect.height);
   };
 
-  const desktopHero = isDarkMode ? heroDarkSvg : heroSvg;
-  const mobileHero = isDarkMode ? heroMobileDarkImage : heroMobileImage;
+  const scrollToWork = () => {
+    document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <section
       id="home"
       onMouseMove={handleMouseMove}
-      className="relative min-h-screen overflow-hidden pt-28 md:pt-32 bg-[#f8f7f4] dark:bg-[#070b12]"
+      className="relative min-h-screen overflow-hidden bg-[#f8f7f4] dark:bg-[#070b12] px-6 md:px-10 pt-28 md:pt-32"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,217,249,0.35),transparent_25%),radial-gradient(circle_at_85%_35%,rgba(46,64,111,0.10),transparent_30%)] dark:bg-[radial-gradient(circle_at_18%_20%,rgba(255,217,249,0.08),transparent_25%),radial-gradient(circle_at_75%_35%,rgba(46,64,111,0.28),transparent_35%)]" />
-
-      <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.03] bg-[linear-gradient(to_right,#2e406f_1px,transparent_1px),linear-gradient(to_bottom,#2e406f_1px,transparent_1px)] bg-[size:80px_80px]" />
+      {/* Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_18%,rgba(255,217,249,0.28),transparent_24%),radial-gradient(circle_at_78%_32%,rgba(46,64,111,0.10),transparent_32%)] dark:bg-[radial-gradient(circle_at_16%_18%,rgba(255,217,249,0.07),transparent_24%),radial-gradient(circle_at_78%_32%,rgba(46,64,111,0.28),transparent_34%)]" />
 
       <motion.div
-        className="hidden md:block absolute w-[36vw] h-[36vw] max-w-[520px] max-h-[520px] rounded-[42%_58%_52%_48%/48%_42%_58%_52%] pointer-events-none border border-white/50 dark:border-white/10 backdrop-blur-[10px]"
+        className="absolute inset-0 opacity-[0.09] dark:opacity-[0.06]"
         style={{
-          left: glassX,
-          top: glassY,
-          translateX: '-50%',
-          translateY: '-50%',
-          background:
-            'linear-gradient(135deg, rgba(255,217,249,0.32), rgba(255,255,255,0.16), rgba(46,64,111,0.08))',
+          x: gridX,
+          y: gridY,
+          backgroundImage:
+            'linear-gradient(to right, #2e406f 1px, transparent 1px), linear-gradient(to bottom, #2e406f 1px, transparent 1px)',
+          backgroundSize: '88px 88px',
         }}
-        animate={{
-          borderRadius: [
-            '42% 58% 52% 48% / 48% 42% 58% 52%',
-            '55% 45% 40% 60% / 40% 55% 45% 60%',
-            '42% 58% 52% 48% / 48% 42% 58% 52%',
-          ],
-          rotate: [0, 3, -2, 0],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 min-h-[calc(100vh-8rem)] grid md:grid-cols-[0.9fr_1.1fr] items-center gap-10">
+      <div className="relative z-10 max-w-7xl mx-auto min-h-[calc(100vh-8rem)] grid md:grid-cols-[0.9fr_1.1fr] gap-14 items-center">
+        {/* Text */}
         <motion.div
-          initial={{ opacity: 0, y: 36 }}
+          initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="text-center md:text-left"
         >
-          <p className="text-[#ffd9f9] font-bold tracking-[0.18em] text-sm mb-5">
-            HI, I&apos;M
+          <p className="text-[#2e406f]/55 dark:text-white/45 font-bold tracking-[0.26em] text-xs md:text-sm mb-7">
+            GRAPHIC DESIGNER
           </p>
 
-          <h1 className="text-[#2e406f] dark:text-white font-black leading-[0.98] tracking-[-0.04em] text-[clamp(3.2rem,8vw,7.5rem)]">
+          <h1 className="text-[#2e406f] dark:text-white font-black leading-[0.95] tracking-[-0.055em] text-[clamp(3.6rem,8vw,8.2rem)]">
             CHENG
             <br />
-            KUEI CHIEN<span className="text-[#ffd9f9]">.</span>
+            KUEI
+            <br />
+            CHIEN<span className="text-[#ffd9f9]">.</span>
           </h1>
 
-          <p className="mt-6 text-[#2e406f] dark:text-white font-bold tracking-[0.16em] text-sm md:text-base">
-            GRAPHIC / VISUAL DESIGNER
+          <p className="mt-7 text-[#2e406f] dark:text-white font-bold tracking-[0.14em] text-xs md:text-sm">
+            BRANDING / PACKAGE / LAYOUT / ILLUSTRATION
           </p>
 
-          <p className="mt-8 max-w-md mx-auto md:mx-0 text-sm md:text-base leading-8 text-[#2e406f]/60 dark:text-white/55">
-            專注於品牌視覺、包裝設計、版面編排與插畫表現，讓作品以更清楚、更有質感的方式被看見。
+          <p className="mt-9 max-w-md mx-auto md:mx-0 text-[#2e406f]/65 dark:text-white/58 leading-8 text-sm md:text-base">
+            專注品牌識別、包裝設計、版面編排與插畫，
+            以清晰而有質感的視覺傳達內容。
           </p>
 
           <motion.button
-            onClick={() => {
-              const work = document.getElementById('work');
-              work?.scrollIntoView({ behavior: 'smooth' });
-            }}
+            onClick={scrollToWork}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
             whileHover={{ y: -3 }}
             whileTap={{ scale: 0.96 }}
-            className="mt-10 inline-flex items-center gap-4 rounded-full border border-[#ffd9f9] px-7 py-3 text-sm font-bold tracking-[0.12em] text-[#2e406f] dark:text-white hover:bg-[#ffd9f9]/40 transition-colors"
+            className="mt-10 inline-flex items-center gap-8 rounded-full border border-[#2e406f]/35 dark:border-white/25 px-8 py-4 text-[#2e406f] dark:text-white text-xs font-black tracking-[0.18em] hover:bg-[#ffd9f9]/45 transition-colors"
           >
-            VIEW MY WORK
-            <span>→</span>
+            VIEW WORKS
+            <span className="text-lg leading-none">→</span>
           </motion.button>
         </motion.div>
 
-        <motion.div
-          style={{ rotate: heroRotate }}
-          initial={{ opacity: 0, y: 40, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="relative flex justify-center md:justify-end"
-        >
-          <div className="relative w-full max-w-[680px]">
-            <div className="absolute -inset-5 rounded-[3rem] bg-white/30 dark:bg-white/[0.03] blur-2xl" />
+        {/* Interactive Graphic Hero */}
+        <div className="relative h-[520px] md:h-[680px]">
+          {/* back paper */}
+          <motion.div
+            className="absolute right-0 top-6 w-[78%] h-[82%] rounded-[1.6rem] bg-white/58 dark:bg-white/[0.04] border border-[#2e406f]/12 dark:border-white/10 shadow-[0_30px_90px_rgba(46,64,111,0.10)]"
+            style={{ x: gridX, y: gridY }}
+          >
+            <div className="absolute inset-8 border border-[#2e406f]/16 dark:border-white/10" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#2e406f_1px,transparent_1px),linear-gradient(to_bottom,#2e406f_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.08]" />
+            <p className="absolute right-8 top-10 text-[clamp(3rem,7vw,6rem)] font-black tracking-[-0.08em] text-[#2e406f]/15 dark:text-white/10">
+              2026
+            </p>
+          </motion.div>
 
-            <img
-              src={desktopHero}
-              alt="Cheng Kuei Chien Hero"
-              draggable={false}
-              className="hidden md:block relative w-full h-auto select-none pointer-events-none"
-            />
+          {/* blue card */}
+          <motion.div
+            className="absolute left-[8%] top-[8%] w-[48%] h-[55%] rounded-[1.4rem] bg-[#2e406f] shadow-[0_35px_90px_rgba(46,64,111,0.26)] overflow-hidden"
+            style={{ x: blueX, y: blueY, rotate: -1.5 }}
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.12),transparent_32%)]" />
+            <p className="absolute left-10 top-9 text-white text-5xl font-black">K</p>
+            <p className="absolute left-10 top-28 text-white/70 text-xs leading-5">
+              Visual
+              <br />
+              Communication
+              <br />
+              Design
+            </p>
+            <span className="absolute right-10 top-12 text-white/75 text-3xl">＋</span>
+            <div className="absolute right-10 bottom-10 grid grid-cols-4 gap-2">
+              {Array.from({ length: 16 }).map((_, i) => (
+                <span key={i} className="w-2 h-2 rounded-full bg-[#ffd9f9]/75" />
+              ))}
+            </div>
+          </motion.div>
 
-            <img
-              src={mobileHero}
-              alt="Cheng Kuei Chien Mobile Hero"
-              draggable={false}
-              className="block md:hidden relative w-full max-w-[360px] mx-auto h-auto select-none pointer-events-none"
-            />
-          </div>
-        </motion.div>
-      </div>
+          {/* white card */}
+          <motion.div
+            className="absolute left-[20%] top-[35%] w-[50%] h-[38%] rounded-[1.3rem] bg-[#f8f7f4] dark:bg-[#101722] border border-white/70 dark:border-white/10 shadow-[0_35px_90px_rgba(46,64,111,0.18)]"
+            style={{ x: whiteX, y: whiteY, rotate: 0.8 }}
+          >
+            <div className="absolute left-0 top-0 w-16 h-16 bg-[#ffd9f9]" />
+            <h2 className="absolute left-10 top-24 text-[#2e406f] dark:text-white text-3xl md:text-4xl font-black leading-tight">
+              Design
+              <br />
+              with
+              <br />
+              clarity.
+            </h2>
+            <p className="absolute left-10 bottom-10 text-[#2e406f]/55 dark:text-white/45 text-xs leading-5">
+              2026
+              <br />
+              Portfolio
+            </p>
+          </motion.div>
 
-      <div className="absolute left-6 md:left-10 bottom-28 md:bottom-12 hidden sm:flex items-center gap-4 rotate-[-90deg] origin-left text-[10px] tracking-[0.28em] font-bold text-[#2e406f]/45 dark:text-white/30">
-        SCROLL TO EXPLORE
-        <span className="w-8 h-px bg-[#ffd9f9]" />
+          {/* pink card */}
+          <motion.div
+            className="absolute right-[2%] bottom-[7%] w-[38%] h-[32%] rounded-[1.3rem] bg-[#ffd9f9] shadow-[0_30px_80px_rgba(255,217,249,0.35)]"
+            style={{ x: pinkX, y: pinkY, rotate: 2 }}
+          >
+            <div className="absolute right-10 bottom-10 w-16 h-16 rounded-full bg-[#2e406f]" />
+            <div className="absolute left-8 top-8 w-12 h-px bg-[#2e406f]" />
+          </motion.div>
+
+          {/* front navy card */}
+          <motion.div
+            className="absolute right-[14%] bottom-[4%] w-[34%] h-[44%] rounded-[1.2rem] bg-[#2e406f] shadow-[0_35px_90px_rgba(46,64,111,0.30)]"
+            style={{ x: blueX, y: pinkY, rotate: 3 }}
+          >
+            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffd9f9_1.5px,transparent_1.5px)] bg-[size:18px_18px]" />
+            <p className="absolute left-8 bottom-8 text-white/85 text-xs leading-5">
+              Branding
+              <br />
+              Package
+              <br />
+              Layout
+              <br />
+              Illustration
+            </p>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
