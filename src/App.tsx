@@ -2,7 +2,7 @@ import { motion, useMotionValue, useScroll, useSpring } from 'motion/react';
 import { useEffect, useState } from 'react';
 
 import { Navigation } from './components/Navigation';
-import { HomeHero } from './components/HomeHero_v2';
+import { HomeHero } from './components/HomeHero';
 import { WorkSection } from './components/WorkSection';
 import { AboutSection, ContactSection } from './components/AboutContact';
 import { Footer } from './components/Footer';
