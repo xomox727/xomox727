@@ -29,6 +29,18 @@ interface WorkSectionProps {
   setIsHovering: (val: boolean) => void;
 }
 
+const getShortTitle = (id: string, title: string) => {
+  const shortTitles: Record<string, string> = {
+    identity: 'IDENTITY',
+    layout: 'LAYOUT',
+    package: 'PACKAGE',
+    illustration: 'ILLUST.',
+    another: 'ANOTHER',
+  };
+
+  return shortTitles[id] ?? title;
+};
+
 export const WorkSection = ({
   categories,
   setSelectedCategory,
@@ -104,23 +116,22 @@ export const WorkSection = ({
 
                 <div className="absolute inset-0 bg-gradient-to-t from-[#2e406f]/82 via-[#2e406f]/14 to-white/10 dark:from-black/82" />
 
-                {/* 收合狀態：直式分類名稱 */}
+                {/* 收合狀態：底部短標籤 */}
                 <motion.div
                   initial={false}
                   animate={{
                     opacity: active ? 0 : 1,
+                    y: active ? 10 : 0,
                   }}
                   transition={{ duration: 0.25 }}
-                  className="absolute inset-0 flex items-end justify-center pb-8 pointer-events-none"
+                  className="absolute inset-x-0 bottom-0 p-5 pointer-events-none"
                 >
-                  <div className="[writing-mode:vertical-rl] rotate-180">
-                    <h3 className="text-white text-lg xl:text-xl font-black tracking-[0.12em] whitespace-nowrap">
-                      {category.title}
-                    </h3>
-                  </div>
+                  <span className="inline-flex max-w-full rounded-full bg-white/86 dark:bg-white/14 px-4 py-2 text-[11px] font-black tracking-[0.12em] text-[#2e406f] dark:text-white backdrop-blur-md truncate shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+                    {getShortTitle(category.id, category.title)}
+                  </span>
                 </motion.div>
 
-                {/* 展開狀態：完整資訊 */}
+                {/* 展開狀態：大字完整分類名稱 */}
                 <motion.div
                   initial={false}
                   animate={{
@@ -130,7 +141,7 @@ export const WorkSection = ({
                   transition={{ duration: 0.35 }}
                   className="absolute inset-x-0 bottom-0 p-8 pointer-events-none"
                 >
-                  <h3 className="text-white text-2xl xl:text-4xl font-black tracking-[-0.04em] leading-tight break-words max-w-[420px]">
+                  <h3 className="text-white text-2xl xl:text-4xl font-black tracking-[-0.04em] leading-tight break-words max-w-[420px] drop-shadow-sm">
                     {category.title}
                   </h3>
 
