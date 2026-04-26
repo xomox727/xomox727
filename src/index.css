@@ -78,3 +78,8 @@ body.modal-open {
   overflow: hidden !important;
   touch-action: none !important;
 }
+.will-change-transform {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
