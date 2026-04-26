@@ -29,21 +29,21 @@ export const Navigation = React.memo(
           Skip to main content
         </a>
 
-        {/* Desktop Navigation */}
         <nav
           aria-label="Main Desktop Navigation"
-          className="fixed top-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-6xl h-16 bg-white/65 dark:bg-white/[0.055] backdrop-blur-2xl z-50 hidden md:flex items-center justify-between px-7 border border-white/70 dark:border-white/10 rounded-full shadow-[0_20px_70px_rgba(46,64,111,0.10)] dark:shadow-[0_20px_70px_rgba(0,0,0,0.35)] transition-all duration-500"
+          className="fixed top-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-6xl h-16 bg-white/70 dark:bg-white/[0.065] backdrop-blur-2xl z-50 hidden md:flex items-center justify-between px-7 border border-white/70 dark:border-white/10 rounded-full shadow-[0_20px_70px_rgba(46,64,111,0.10)] dark:shadow-[0_20px_70px_rgba(0,0,0,0.35)] transition-all duration-500"
         >
           <button
+            type="button"
             onClick={() => onNavClick('home')}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
-            className="-m-4 px-4 py-4 text-[12px] font-bold tracking-[0.18em] text-[#2e406f] dark:text-white"
+            className="-m-4 px-4 py-4 text-[12px] font-bold tracking-[0.18em] text-[#2e406f] dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white focus-visible:rounded-full"
           >
             CHENG KUEI CHIEN
           </button>
 
-          <ul className="flex gap-10 items-center">
+          <ul className="flex gap-12 items-center">
             {navItems.map((item) => {
               const id = item.toLowerCase();
               const active = activeSection === id;
@@ -51,16 +51,17 @@ export const Navigation = React.memo(
               return (
                 <li key={item}>
                   <motion.button
+                    type="button"
                     onClick={() => onNavClick(id)}
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     aria-current={active ? 'page' : undefined}
-                    className={`relative -m-4 px-4 py-4 text-[12px] font-bold tracking-[0.18em] transition-colors duration-300 ${
+                    className={`relative -m-4 px-4 py-4 text-[12px] font-bold tracking-[0.18em] transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white focus-visible:rounded-full ${
                       active
                         ? 'text-[#2e406f] dark:text-white'
-                        : 'text-[#2e406f]/40 hover:text-[#2e406f] dark:text-white/35 dark:hover:text-white'
+                        : 'text-[#2e406f]/55 hover:text-[#2e406f] dark:text-white/50 dark:hover:text-white'
                     }`}
                   >
                     {item}
@@ -77,23 +78,23 @@ export const Navigation = React.memo(
           </ul>
 
           <motion.button
+            type="button"
             onClick={() => setIsDarkMode(!isDarkMode)}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
             whileHover={{ scale: 1.08, rotate: 10 }}
             whileTap={{ scale: 0.92 }}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 dark:bg-white/10 text-[#2e406f] dark:text-white shadow-sm border border-black/5 dark:border-white/10"
-            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 dark:bg-white/10 text-[#2e406f] dark:text-white shadow-sm border border-black/5 dark:border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
+            aria-label={isDarkMode ? '切換為亮色模式' : '切換為暗黑模式'}
             aria-pressed={isDarkMode}
           >
             {isDarkMode ? <Sun size={17} /> : <Moon size={17} />}
           </motion.button>
         </nav>
 
-        {/* Mobile Navigation */}
         <nav
           aria-label="Main Mobile Navigation"
-          className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-50 rounded-full flex items-center justify-between px-5 py-4 bg-white/60 dark:bg-white/[0.07] backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-[0_15px_50px_rgba(46,64,111,0.16)]"
+          className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 rounded-full flex items-center gap-2 px-4 py-3 bg-white/72 dark:bg-white/[0.08] backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-[0_15px_50px_rgba(46,64,111,0.16)]"
         >
           <ul className="flex items-center justify-between w-full">
             {navItems.map((item) => {
@@ -103,11 +104,12 @@ export const Navigation = React.memo(
               return (
                 <li key={item} className="flex-1 flex justify-center">
                   <button
+                    type="button"
                     onClick={() => onNavClick(id)}
-                    className={`-m-3 px-3 py-3 text-[10px] font-bold tracking-[0.12em] transition-colors ${
+                    className={`min-h-11 px-2 text-[11px] font-bold tracking-[0.1em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white focus-visible:rounded-full ${
                       active
                         ? 'text-[#2e406f] dark:text-white'
-                        : 'text-[#2e406f]/45 dark:text-white/40'
+                        : 'text-[#2e406f]/60 dark:text-white/55'
                     }`}
                   >
                     {item}
@@ -116,6 +118,16 @@ export const Navigation = React.memo(
               );
             })}
           </ul>
+
+          <button
+            type="button"
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-white/80 dark:bg-white/10 text-[#2e406f] dark:text-white border border-black/5 dark:border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
+            aria-label={isDarkMode ? '切換為亮色模式' : '切換為暗黑模式'}
+            aria-pressed={isDarkMode}
+          >
+            {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
         </nav>
       </>
     );
