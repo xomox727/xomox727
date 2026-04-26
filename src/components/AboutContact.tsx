@@ -37,11 +37,9 @@ export const AboutSection = ({ setIsHovering }: SectionProps) => {
           </p>
 
           <h2 className="text-[clamp(2.2rem,5vw,5.2rem)] font-black leading-[1.02] tracking-[-0.04em]">
-            從設計中思考
+            以設計思考
             <br />
-            用視覺讓事情
-            <br />
-            變得更好<span className="text-[#ffd9f9]">。</span>
+            用視覺對話<span className="text-[#ffd9f9]">。</span>
           </h2>
 
           <p className="mt-8 text-white/58 leading-8 max-w-lg text-sm md:text-base">
