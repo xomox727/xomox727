@@ -30,15 +30,41 @@ export default function App() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const mouseXSpring = useSpring(mouseX, { damping: 25, stiffness: 200 });
-  const mouseYSpring = useSpring(mouseY, { damping: 25, stiffness: 200 });
-  const dotXSpring = useSpring(mouseX, { damping: 15, stiffness: 500 });
-  const dotYSpring = useSpring(mouseY, { damping: 15, stiffness: 500 });
+  // 滑鼠外圈：保留原本跟隨感，但減少拖慢
+  const mouseXSpring = useSpring(mouseX, {
+    damping: 32,
+    stiffness: 320,
+    mass: 0.35,
+  });
+
+  const mouseYSpring = useSpring(mouseY, {
+    damping: 32,
+    stiffness: 320,
+    mass: 0.35,
+  });
+
+  // 中心小點：反應更快
+  const dotXSpring = useSpring(mouseX, {
+    damping: 26,
+    stiffness: 750,
+    mass: 0.22,
+  });
+
+  const dotYSpring = useSpring(mouseY, {
+    damping: 26,
+    stiffness: 750,
+    mass: 0.22,
+  });
 
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+  });
 
-  const activeCategoryData = categories.find((category) => category.id === selectedCategory);
+  const activeCategoryData = categories.find(
+    (category) => category.id === selectedCategory,
+  );
 
   useEffect(() => {
     if (selectedCategory || selectedWork || enlargedImage) {
@@ -50,23 +76,51 @@ export default function App() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && (selectedCategory || selectedWork || enlargedImage)) {
+      if (
+        event.key === 'Escape' &&
+        (selectedCategory || selectedWork || enlargedImage)
+      ) {
         window.history.back();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
+
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedCategory, selectedWork, enlargedImage]);
 
+  // 滑鼠效能優化：用 requestAnimationFrame 限制更新頻率
   useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      mouseX.set(event.clientX);
-      mouseY.set(event.clientY);
+    let frameId: number | null = null;
+    let latestX = 0;
+    let latestY = 0;
+
+    const updateMousePosition = () => {
+      mouseX.set(latestX);
+      mouseY.set(latestY);
+      frameId = null;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const handleMouseMove = (event: MouseEvent) => {
+      latestX = event.clientX;
+      latestY = event.clientY;
+
+      if (frameId === null) {
+        frameId = window.requestAnimationFrame(updateMousePosition);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
   }, [mouseX, mouseY]);
 
   useEffect(() => {
@@ -80,9 +134,9 @@ export default function App() {
         style={{ scaleX }}
       />
 
-      {/* 保留你的自訂滑鼠 */}
+      {/* 自訂滑鼠外圈 */}
       <motion.div
-        className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100]"
+        className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100] will-change-transform"
         style={{
           x: mouseXSpring,
           y: mouseYSpring,
@@ -94,10 +148,16 @@ export default function App() {
           scale: isHovering ? 1.5 : 1,
           opacity: isHovering ? 0.6 : 1,
         }}
+        transition={{
+          backgroundColor: { duration: 0.18 },
+          scale: { duration: 0.18 },
+          opacity: { duration: 0.18 },
+        }}
       />
 
+      {/* 自訂滑鼠中心點 */}
       <motion.div
-        className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white"
+        className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white will-change-transform"
         style={{
           x: dotXSpring,
           y: dotYSpring,
