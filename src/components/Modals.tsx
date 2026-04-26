@@ -76,14 +76,13 @@ export const Modals = React.memo(
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                  {activeCategoryData.works.map((work: Work, index: number) => (
+                  {activeCategoryData.works.map((work: Work) => (
                     <motion.button
                       key={work.id}
                       type="button"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{
-                        delay: 0.12 + index * 0.06,
                         duration: 0.45,
                       }}
                       onClick={() => setSelectedWork(work)}
@@ -108,10 +107,6 @@ export const Modals = React.memo(
 
                       {work.title && (
                         <div className="absolute left-5 right-5 bottom-5 z-10 text-left">
-                          <p className="text-white/65 text-[10px] font-bold tracking-[0.22em] mb-2">
-                            0{index + 1}
-                          </p>
-
                           <span
                             className={`inline-block rounded-full px-4 py-2 text-xs font-bold tracking-[0.12em] ${
                               isDarkMode
