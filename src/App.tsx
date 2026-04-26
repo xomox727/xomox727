@@ -15,6 +15,7 @@ import { usePortfolioRouting } from './hooks/usePortfolioRouting';
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [isFinePointer, setIsFinePointer] = useState(false);
 
   const { activeSection, handleNavClick } = useActiveSection();
 
@@ -30,11 +31,6 @@ export default function App() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  /**
-   * 游標效能優化：
-   * 外圈：保留柔順感，但比原本更跟手
-   * 中心白點：直接跟滑鼠，不再 spring 延遲
-   */
   const mouseXSpring = useSpring(mouseX, {
     damping: 22,
     stiffness: 650,
@@ -59,6 +55,19 @@ export default function App() {
   );
 
   useEffect(() => {
+    const media = window.matchMedia('(pointer: fine) and (min-width: 768px)');
+
+    const updatePointerState = () => {
+      setIsFinePointer(media.matches);
+    };
+
+    updatePointerState();
+    media.addEventListener('change', updatePointerState);
+
+    return () => media.removeEventListener('change', updatePointerState);
+  }, []);
+
+  useEffect(() => {
     if (selectedCategory || selectedWork || enlargedImage) {
       document.body.classList.add('modal-open');
     } else {
@@ -81,12 +90,9 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedCategory, selectedWork, enlargedImage]);
 
-  /**
-   * 滑鼠位置更新：
-   * 用 requestAnimationFrame 控制更新頻率，
-   * 避免 mousemove 事件過多造成掉幀。
-   */
   useEffect(() => {
+    if (!isFinePointer) return;
+
     let frameId: number | null = null;
     let latestX = 0;
     let latestY = 0;
@@ -117,7 +123,7 @@ export default function App() {
         window.cancelAnimationFrame(frameId);
       }
     };
-  }, [mouseX, mouseY]);
+  }, [isFinePointer, mouseX, mouseY]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
@@ -130,37 +136,39 @@ export default function App() {
         style={{ scaleX }}
       />
 
-      {/* 自訂滑鼠外圈 */}
-      <motion.div
-        className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100] will-change-transform"
-        style={{
-          x: mouseXSpring,
-          y: mouseYSpring,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-        animate={{
-          backgroundColor: isHovering ? '#ffd9f9' : '#2e406f',
-          scale: isHovering ? 1.5 : 1,
-          opacity: isHovering ? 0.6 : 1,
-        }}
-        transition={{
-          backgroundColor: { duration: 0.12 },
-          scale: { duration: 0.12 },
-          opacity: { duration: 0.12 },
-        }}
-      />
+      {isFinePointer && (
+        <>
+          <motion.div
+            className="hidden md:block fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[100] will-change-transform"
+            style={{
+              x: mouseXSpring,
+              y: mouseYSpring,
+              translateX: '-50%',
+              translateY: '-50%',
+            }}
+            animate={{
+              backgroundColor: isHovering ? '#ffd9f9' : '#2e406f',
+              scale: isHovering ? 1.5 : 1,
+              opacity: isHovering ? 0.6 : 1,
+            }}
+            transition={{
+              backgroundColor: { duration: 0.12 },
+              scale: { duration: 0.12 },
+              opacity: { duration: 0.12 },
+            }}
+          />
 
-      {/* 自訂滑鼠中心白點：直接跟滑鼠，比 spring 更快 */}
-      <motion.div
-        className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white will-change-transform"
-        style={{
-          x: mouseX,
-          y: mouseY,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-      />
+          <motion.div
+            className="hidden md:block fixed top-0 left-0 w-2.5 h-2.5 rounded-full pointer-events-none z-[101] bg-white will-change-transform"
+            style={{
+              x: mouseX,
+              y: mouseY,
+              translateX: '-50%',
+              translateY: '-50%',
+            }}
+          />
+        </>
+      )}
 
       <Navigation
         activeSection={activeSection}
