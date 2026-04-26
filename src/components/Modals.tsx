@@ -34,6 +34,10 @@ export const Modals = React.memo(
     setIsHovering,
     isDarkMode,
   }: ModalsProps) => {
+    const closeEnlargedImage = () => {
+      setEnlargedImage(null);
+    };
+
     return (
       <>
         {/* Category Detail View */}
@@ -88,14 +92,13 @@ export const Modals = React.memo(
                       aria-label={`View details for ${work.title || 'project'}`}
                       className="work-card group relative min-h-[280px] md:min-h-[340px] overflow-hidden bg-white/70 dark:bg-white/[0.06] border border-white/70 dark:border-white/10 rounded-[1.6rem] shadow-[0_18px_55px_rgba(46,64,111,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
                     >
-                      {/* 作品縮圖：改成 contain，避免子圖被裁切 */}
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/35 dark:bg-white/[0.025]">
+                      <div className="absolute inset-0 flex items-center justify-center bg-white/35 dark:bg-white/[0.025] p-5">
                         <img
                           src={work.thumb}
                           alt={work.title || ''}
                           loading="lazy"
                           draggable={false}
-                          className={`max-w-[96%] max-h-[96%] object-contain transition-transform duration-700 group-hover:scale-[1.03] ${
+                          className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-[1.025] ${
                             work.imageClass || ''
                           }`}
                         />
@@ -173,7 +176,6 @@ export const Modals = React.memo(
                     </button>
                   </div>
 
-                  {/* 子圖預覽：全部改成 object-contain，不再裁切 */}
                   <div
                     className={`grid grid-cols-1 md:grid-cols-2 ${
                       selectedWork.galleryImages?.length === 3
@@ -185,7 +187,7 @@ export const Modals = React.memo(
                       <button
                         key={`${img}-${index}`}
                         type="button"
-                        className="group relative overflow-hidden flex items-center justify-center cursor-zoom-in min-h-[280px] md:min-h-[360px] xl:min-h-[420px] bg-white/72 dark:bg-white/[0.06] border border-white/70 dark:border-white/10 rounded-[1.6rem] shadow-[0_18px_55px_rgba(46,64,111,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
+                        className="group relative overflow-hidden flex items-center justify-center cursor-zoom-in min-h-[280px] md:min-h-[360px] xl:min-h-[420px] bg-white/72 dark:bg-white/[0.06] border border-white/70 dark:border-white/10 rounded-[1.6rem] shadow-[0_18px_55px_rgba(46,64,111,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white p-4"
                         onClick={() => setEnlargedImage(img)}
                         onMouseEnter={() => setIsHovering(true)}
                         onMouseLeave={() => setIsHovering(false)}
@@ -196,7 +198,7 @@ export const Modals = React.memo(
                           alt=""
                           loading="lazy"
                           draggable={false}
-                          className="max-w-[96%] max-h-[96%] object-contain transition-transform duration-700 group-hover:scale-[1.025]"
+                          className="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-[1.02]"
                         />
 
                         <div className="absolute inset-0 bg-[#2e406f]/0 group-hover:bg-[#2e406f]/5 dark:group-hover:bg-white/5 transition-colors duration-500" />
@@ -240,38 +242,38 @@ export const Modals = React.memo(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.25 }}
               className="fixed inset-0 z-[80] bg-[#f8f7f4]/98 dark:bg-[#070b12]/98 flex items-center justify-center p-4 md:p-8 cursor-zoom-out backdrop-blur-sm"
-              onClick={() => setEnlargedImage(null)}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              role="button"
-              aria-label="Close enlarged view"
+              onClick={closeEnlargedImage}
+              role="presentation"
             >
-              <motion.img
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                src={enlargedImage}
-                alt="Enlarged view"
-                className="max-w-[96vw] max-h-[92vh] object-contain rounded-[1rem] shadow-[0_24px_80px_rgba(46,64,111,0.12)]"
-                onClick={(event) => event.stopPropagation()}
-              />
-
               <button
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
-                  setEnlargedImage(null);
+                  closeEnlargedImage();
                 }}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
-                className="absolute top-5 right-5 md:top-8 md:right-8 text-xs font-bold tracking-[0.2em] uppercase text-[#2e406f]/60 hover:text-[#2e406f] dark:text-white/55 dark:hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white focus-visible:rounded-full px-3 py-2"
+                className="absolute top-5 right-5 md:top-8 md:right-8 z-10 text-xs font-bold tracking-[0.2em] uppercase text-[#2e406f]/60 hover:text-[#2e406f] dark:text-white/55 dark:hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white focus-visible:rounded-full px-3 py-2"
                 aria-label="Close enlarged image"
               >
                 CLOSE
               </button>
+
+              <motion.img
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                src={enlargedImage}
+                alt="Enlarged view"
+                className="max-w-[96vw] max-h-[92vh] object-contain rounded-[1rem] shadow-[0_24px_80px_rgba(46,64,111,0.12)] cursor-zoom-out"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  closeEnlargedImage();
+                }}
+              />
             </motion.div>
           )}
         </AnimatePresence>
