@@ -20,6 +20,10 @@ export const Navigation = React.memo(
     setIsHovering,
     onNavClick,
   }: NavigationProps) => {
+    const toggleDarkMode = () => {
+      setIsDarkMode(!isDarkMode);
+    };
+
     return (
       <>
         <a
@@ -29,6 +33,7 @@ export const Navigation = React.memo(
           Skip to main content
         </a>
 
+        {/* Desktop Navigation */}
         <nav
           aria-label="Main Desktop Navigation"
           className="fixed top-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-6xl h-16 bg-white/70 dark:bg-white/[0.065] backdrop-blur-2xl z-50 hidden md:flex items-center justify-between px-7 border border-white/70 dark:border-white/10 rounded-full shadow-[0_20px_70px_rgba(46,64,111,0.10)] dark:shadow-[0_20px_70px_rgba(0,0,0,0.35)] transition-all duration-500"
@@ -77,9 +82,10 @@ export const Navigation = React.memo(
             })}
           </ul>
 
+          {/* Desktop Dark Mode Button */}
           <motion.button
             type="button"
-            onClick={() => setIsDarkMode(!isDarkMode)}
+            onClick={toggleDarkMode}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
             whileHover={{ scale: 1.08, rotate: 10 }}
@@ -92,6 +98,7 @@ export const Navigation = React.memo(
           </motion.button>
         </nav>
 
+        {/* Mobile Navigation */}
         <nav
           aria-label="Main Mobile Navigation"
           className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 rounded-full flex items-center gap-2 px-4 py-3 bg-white/72 dark:bg-white/[0.08] backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-[0_15px_50px_rgba(46,64,111,0.16)]"
@@ -119,9 +126,10 @@ export const Navigation = React.memo(
             })}
           </ul>
 
+          {/* Mobile Dark Mode Button */}
           <button
             type="button"
-            onClick={() => setIsDarkMode(!isDarkMode)}
+            onClick={toggleDarkMode}
             className="shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-white/80 dark:bg-white/10 text-[#2e406f] dark:text-white border border-black/5 dark:border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
             aria-label={isDarkMode ? '切換為亮色模式' : '切換為暗黑模式'}
             aria-pressed={isDarkMode}
