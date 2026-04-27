@@ -62,7 +62,7 @@ const identityWorks: Work[] = [
     title: '弘霖工程行',
     type: 'gallery',
     contain: true,
-    imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-80 dark:invert dark:mix-blend-screen dark:opacity-40',
+    imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-90',
     galleryImages: [img('identity3-pic1.png'), img('identity3-pic2.png'), img('identity3-pic3.png')],
   },
   {
