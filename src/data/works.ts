@@ -72,7 +72,7 @@ const identityWorks: Work[] = [
     title: 'MYJ服飾',
     type: 'gallery',
     contain: true,
-    galleryImages: [img('identity4-pic1.png'), img('identity4-pic2.png'), img('identity4-pic3.png')],
+    galleryImages: [img('identity4-pic4.png'), img('identity4-pic1.png'), img('identity4-pic2.png'), img('identity4-pic3.png')],
   },
   {
     id: 'identity-4',
