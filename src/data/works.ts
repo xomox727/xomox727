@@ -81,7 +81,7 @@ const identityWorks: Work[] = [
     title: '台式馬卡龍',
     type: 'gallery',
     contain: true,
-    galleryImages: [img('identity5-pic1.png'), img('identity5-pic2.png')],
+    galleryImages: [img('identity5-pic1.png'), img('identity5-pic2.png'), img('identity5-pic3.png')],
   },
 ];
 
