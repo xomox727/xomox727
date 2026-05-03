@@ -114,8 +114,8 @@ const layoutWorks: Work[] = [
   },
   {
     id: 'layout-3',
-    thumb: img('layout4.png'),
-    full: img('layout4.png'),
+    thumb: img('layout-4.png'),
+    full: img('layout-4.png'),
     title: '二手交流會海報',
     type: 'gallery',
     contain: true,
