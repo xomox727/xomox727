@@ -63,7 +63,6 @@ const identityWorks: Work[] = [
     galleryImages: [
       img('identity2-pic1.svg'),
       img('identity2-pic2.png'),
-      img('identity2-pic3.png'),
     ],
   },
   {
@@ -104,6 +103,7 @@ const identityWorks: Work[] = [
     galleryImages: [
       img('identity5-pic1.png'),
       img('identity5-pic2.png'),
+      img('identity5-pic3.png'),
     ],
   },
 ];
