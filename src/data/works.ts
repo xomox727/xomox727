@@ -154,7 +154,6 @@ const layoutWorks: Work[] = [
     contain: true,
     galleryImages: [
       img('layout4-pic1.png'),
-      img('layout4-pic2.png'),
     ],
   },
   {
