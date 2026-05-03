@@ -81,7 +81,7 @@ const identityWorks: Work[] = [
     title: '台式馬卡龍',
     type: 'gallery',
     contain: true,
-    galleryImages: [img('identity5-pic1.png'), img('identity5-pic2.png'), img('identity5-pic3.png')],
+    galleryImages: [img('identity5-pic1.png'), img('identity5-pic2.png')],
   },
 ];
 
@@ -111,6 +111,15 @@ const layoutWorks: Work[] = [
     contain: true,
     imageClass: 'p-10',
     galleryImages: [img('layout3-pic1.png'), img('layout3-pic2.png')],
+  },
+  {
+    id: 'layout-3',
+    thumb: img('layout4.png'),
+    full: img('layout4.png'),
+    title: '二手交流會海報',
+    type: 'gallery',
+    contain: true,
+    galleryImages: [img('layout4-pic1.png'), img('layout4-pic2.png')],
   },
 ];
 
