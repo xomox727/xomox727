@@ -42,16 +42,16 @@ const anotherWorks: Work[] = [
 
 const identityWorks: Work[] = [
   {
-    id: 'identity-0',
-    thumb: img('identity-1.png'),
-    full: img('identity-1.png'),
-    title: '攝影展主視覺',
+    id: 'identity-4',
+    thumb: img('identity-5.svg'),
+    full: img('identity-5.svg'),
+    title: '台式馬卡龍',
     type: 'gallery',
     contain: true,
-    imageClass: 'object-left p-2',
     galleryImages: [
-      img('identity1-pic1.png'),
-      img('identity1-pic2.png'),
+      img('identity5-pic1.png'),
+      img('identity5-pic2.png'),
+      img('identity5-pic3.png'),
     ],
   },
   {
@@ -94,16 +94,16 @@ const identityWorks: Work[] = [
     ],
   },
   {
-    id: 'identity-4',
-    thumb: img('identity-5.svg'),
-    full: img('identity-5.svg'),
-    title: '台式馬卡龍',
+    id: 'identity-0',
+    thumb: img('identity-1.png'),
+    full: img('identity-1.png'),
+    title: '攝影展主視覺',
     type: 'gallery',
     contain: true,
+    imageClass: 'object-left p-2',
     galleryImages: [
-      img('identity5-pic1.png'),
-      img('identity5-pic2.png'),
-      img('identity5-pic3.png'),
+      img('identity1-pic1.png'),
+      img('identity1-pic2.png'),
     ],
   },
 ];
