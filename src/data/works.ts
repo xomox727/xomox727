@@ -32,7 +32,11 @@ const anotherWorks: Work[] = [
     type: 'gallery',
     title: '社群通知貼圖',
     contain: true,
-    galleryImages: [img('another6-pic1.png'), img('another6-pic2.png'), img('another6-pic3.png')],
+    galleryImages: [
+      img('another6-pic1.png'),
+      img('another6-pic2.png'),
+      img('another6-pic3.png'),
+    ],
   },
 ];
 
@@ -45,7 +49,10 @@ const identityWorks: Work[] = [
     type: 'gallery',
     contain: true,
     imageClass: 'object-left p-2',
-    galleryImages: [img('identity1-pic1.png'), img('identity1-pic2.png')],
+    galleryImages: [
+      img('identity1-pic1.png'),
+      img('identity1-pic2.png'),
+    ],
   },
   {
     id: 'identity-1',
@@ -53,7 +60,11 @@ const identityWorks: Work[] = [
     full: img('identity-2.svg'),
     title: '小黑手工饅頭',
     type: 'gallery',
-    galleryImages: [img('identity2-pic1.svg'), img('identity2-pic2.png')],
+    galleryImages: [
+      img('identity2-pic1.svg'),
+      img('identity2-pic2.png'),
+      img('identity2-pic3.png'),
+    ],
   },
   {
     id: 'identity-2',
@@ -63,7 +74,11 @@ const identityWorks: Work[] = [
     type: 'gallery',
     contain: true,
     imageClass: 'mix-blend-multiply grayscale contrast-125 brightness-110 opacity-90',
-    galleryImages: [img('identity3-pic1.png'), img('identity3-pic2.png'), img('identity3-pic3.png')],
+    galleryImages: [
+      img('identity3-pic1.png'),
+      img('identity3-pic2.png'),
+      img('identity3-pic3.png'),
+    ],
   },
   {
     id: 'identity-3',
@@ -72,7 +87,12 @@ const identityWorks: Work[] = [
     title: 'MYJ服飾',
     type: 'gallery',
     contain: true,
-    galleryImages: [img('identity4-pic4.png'), img('identity4-pic1.png'), img('identity4-pic2.png'), img('identity4-pic3.png')],
+    galleryImages: [
+      img('identity4-pic4.png'),
+      img('identity4-pic1.png'),
+      img('identity4-pic2.png'),
+      img('identity4-pic3.png'),
+    ],
   },
   {
     id: 'identity-4',
@@ -81,7 +101,10 @@ const identityWorks: Work[] = [
     title: '台式馬卡龍',
     type: 'gallery',
     contain: true,
-    galleryImages: [img('identity5-pic1.png'), img('identity5-pic2.png')],
+    galleryImages: [
+      img('identity5-pic1.png'),
+      img('identity5-pic2.png'),
+    ],
   },
 ];
 
@@ -92,7 +115,11 @@ const layoutWorks: Work[] = [
     full: img('layout-1.png'),
     title: '菜單',
     type: 'gallery',
-    galleryImages: [img('layout1-pic1.png'), img('layout1-pic2.png'), img('layout1-pic3.png')],
+    galleryImages: [
+      img('layout1-pic1.png'),
+      img('layout1-pic2.png'),
+      img('layout1-pic3.png'),
+    ],
   },
   {
     id: 'layout-1',
@@ -100,7 +127,10 @@ const layoutWorks: Work[] = [
     full: img('layout-2.png'),
     title: '西螺老屋再造計畫手冊',
     type: 'gallery',
-    galleryImages: [img('layout2-pic1.png'), img('layout2-pic2.png')],
+    galleryImages: [
+      img('layout2-pic1.png'),
+      img('layout2-pic2.png'),
+    ],
   },
   {
     id: 'layout-2',
@@ -110,7 +140,10 @@ const layoutWorks: Work[] = [
     type: 'gallery',
     contain: true,
     imageClass: 'p-10',
-    galleryImages: [img('layout3-pic1.png'), img('layout3-pic2.png')],
+    galleryImages: [
+      img('layout3-pic1.png'),
+      img('layout3-pic2.png'),
+    ],
   },
   {
     id: 'layout-3',
@@ -119,7 +152,21 @@ const layoutWorks: Work[] = [
     title: '二手交流會海報',
     type: 'gallery',
     contain: true,
-    galleryImages: [img('layout4-pic1.png'), img('layout4-pic2.png')],
+    galleryImages: [
+      img('layout4-pic1.png'),
+      img('layout4-pic2.png'),
+    ],
+  },
+  {
+    id: 'layout-4',
+    thumb: img('layout-5.png'),
+    full: img('layout-5.png'),
+    title: '企業宣傳手冊',
+    type: 'gallery',
+    contain: true,
+    galleryImages: [
+      img('layout5-pic1.png'),
+    ],
   },
 ];
 
@@ -131,7 +178,11 @@ const packageWorks: Work[] = [
     title: '東港囡仔',
     type: 'gallery',
     contain: true,
-    galleryImages: [img('package3-pic1.png'), img('package3-pic2.png'), img('package3-pic3.png')],
+    galleryImages: [
+      img('package3-pic1.png'),
+      img('package3-pic2.png'),
+      img('package3-pic3.png'),
+    ],
   },
   {
     id: 'package-0',
@@ -139,7 +190,9 @@ const packageWorks: Work[] = [
     full: img('package-1.png'),
     title: 'MOOD咖啡包、外帶杯',
     type: 'gallery',
-    galleryImages: [img('package-1.png')],
+    galleryImages: [
+      img('package-1.png'),
+    ],
   },
   {
     id: 'package-1',
@@ -147,7 +200,9 @@ const packageWorks: Work[] = [
     full: img('package-2.jpg'),
     title: '甜點包裝',
     type: 'gallery',
-    galleryImages: [img('package-2.jpg')],
+    galleryImages: [
+      img('package-2.jpg'),
+    ],
   },
 ];
 
@@ -158,7 +213,9 @@ const illustrationWorks: Work[] = [
     full: img('illustration-1.jpg'),
     title: '明信片設計',
     type: 'gallery',
-    galleryImages: [img('illustration-1.jpg')],
+    galleryImages: [
+      img('illustration-1.jpg'),
+    ],
   },
   {
     id: 'illustration-1',
@@ -166,7 +223,9 @@ const illustrationWorks: Work[] = [
     full: img('illustration-2.jpg'),
     title: '似顏繪明信片',
     type: 'gallery',
-    galleryImages: [img('illustration-2.jpg')],
+    galleryImages: [
+      img('illustration-2.jpg'),
+    ],
   },
 ];
 
