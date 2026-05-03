@@ -98,14 +98,13 @@ export const Modals = React.memo(
                       aria-label={`View details for ${work.title || 'project'}`}
                       className="work-card group relative min-h-[280px] md:min-h-[340px] overflow-hidden bg-white/70 dark:bg-white/[0.06] border border-white/70 dark:border-white/10 rounded-[1.6rem] shadow-[0_18px_55px_rgba(46,64,111,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e406f] dark:focus-visible:ring-white"
                     >
-                      {/* 作品縮圖展示底板：黑暗模式也維持白底，避免深色 LOGO 看不清楚 */}
                       <div className="absolute inset-0 flex items-center justify-center bg-white/85 dark:bg-white/90 p-5">
                         <img
                           src={work.thumb}
                           alt={work.title || ''}
                           loading="lazy"
                           draggable={false}
-                          className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-[1.025] ${
+                          className={`w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.025] ${
                             work.imageClass || ''
                           }`}
                         />
@@ -201,7 +200,7 @@ export const Modals = React.memo(
                           alt=""
                           loading="lazy"
                           draggable={false}
-                          className="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-[1.02]"
+                          className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.02]"
                         />
 
                         <div className="absolute inset-0 bg-[#2e406f]/0 group-hover:bg-[#2e406f]/4 dark:group-hover:bg-[#2e406f]/4 transition-colors duration-500" />
@@ -227,14 +226,14 @@ export const Modals = React.memo(
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.95, opacity: 0 }}
                     transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="max-w-[92vw] max-h-[86vh] bg-white/95 rounded-[1.2rem] p-4 md:p-6 shadow-[0_24px_80px_rgba(46,64,111,0.12)] cursor-default"
+                    className="w-[92vw] h-[86vh] max-w-[1400px] bg-white/95 rounded-[1.2rem] p-4 md:p-6 shadow-[0_24px_80px_rgba(46,64,111,0.12)] cursor-default"
                     onClick={(event) => event.stopPropagation()}
                   >
                     <img
                       src={selectedWork.full}
                       alt={selectedWork.title || 'Full screen project image'}
                       draggable={false}
-                      className="max-w-[calc(92vw-2rem)] md:max-w-[calc(92vw-3rem)] max-h-[calc(86vh-2rem)] md:max-h-[calc(86vh-3rem)] object-contain"
+                      className="w-full h-full object-contain"
                     />
                   </motion.div>
                 </>
@@ -276,7 +275,7 @@ export const Modals = React.memo(
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="max-w-[96vw] max-h-[92vh] bg-white/95 rounded-[1rem] shadow-[0_24px_80px_rgba(46,64,111,0.12)] cursor-zoom-out p-4 md:p-6"
+                className="w-[96vw] h-[92vh] max-w-[1500px] bg-white/95 rounded-[1rem] shadow-[0_24px_80px_rgba(46,64,111,0.12)] cursor-zoom-out p-4 md:p-6"
                 onClick={(event) => {
                   event.stopPropagation();
                   closeEnlargedImage();
@@ -287,7 +286,7 @@ export const Modals = React.memo(
                   src={enlargedImage}
                   alt="Enlarged view"
                   draggable={false}
-                  className="max-w-[calc(96vw-2rem)] md:max-w-[calc(96vw-3rem)] max-h-[calc(92vh-2rem)] md:max-h-[calc(92vh-3rem)] object-contain"
+                  className="w-full h-full object-contain"
                 />
               </motion.div>
             </motion.div>
